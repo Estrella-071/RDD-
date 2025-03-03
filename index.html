@@ -15,17 +15,20 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
 </head>
 <body>
-  <!-- 側邊選單開關按鈕 -->
-  <button id="sideMenuToggle" title="切換選單">☰</button>
   <!-- 側邊選單 -->
-  <div id="sideMenu">
-    <!-- 網站標題（整個容器可點擊） -->
+  <button id="sideMenuToggle" title="切換選單">☰</button>
+  <nav id="sideMenu">
     <div id="siteTitleContainer">
       <h1 id="siteTitle">Random Dice Defense : PvP</h1>
-      <span id="siteTitleSub"></span>
-      <span id="easterEggText"></span>
+      <span id="siteTitleSub">協同模式卡片計算器</span>
+      <span id="easterEggText">Thinking🤔</span>
     </div>
-    <!-- 語言切換區塊 -->
+    <ul>
+      <li><a id="menuCalculator" href="#calculator">換算器</a></li>
+      <li><a id="menuCommon" href="#common">常用換算</a></li>
+      <li><a id="menuChartSection" href="#chartSection">關係圖</a></li>
+      <li><a id="menuHistory" href="#history">歷史記錄</a></li>
+    </ul>
     <div id="languageToggle">
       <svg id="globeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" style="width:1.2rem; height:1.2rem;">
         <path d="M16 2.667C8.64 2.667 2.667 8.64 2.667 16S8.64 29.333 16 29.333 29.333 23.36 29.333 16 23.36 2.667 16 2.667zm0 24C9.76 26.667 4.667 21.573 4.667 16c0-5.573 5.093-10.667 11.333-10.667 6.24 0 11.333 5.093 11.333 10.667 0 5.573-5.093 10.667-11.333 10.667z"/>
@@ -33,63 +36,58 @@
       </svg>
       <span>語言</span>
       <select id="langSelect" aria-label="選擇語言">
-        <option value="zh-TW">繁中</option>
+        <option value="zh-TW" selected>繁中</option>
         <option value="zh-CN">简中</option>
         <option value="en">English</option>
         <option value="ja">日本語</option>
         <option value="ko">한국어</option>
       </select>
     </div>
-    <!-- 導覽連結 -->
-    <a href="#calculator" id="menuCalculator" data-target="calculator"></a>
-    <a href="#common" id="menuCommon" data-target="common"></a>
-    <a href="#chartSection" id="menuChartSection" data-target="chartSection"></a>
-    <a href="#history" id="menuHistory" data-target="history"></a>
-    <!-- 黑／白模式切換按鈕 -->
     <div id="darkModeToggle">
       <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"></svg>
-      <span id="darkModeText"></span>
+      <span id="darkModeText">白天模式</span>
     </div>
-  </div>
+  </nav>
+
   <!-- 右下角導航按鈕 -->
   <div id="pageNav">
     <button id="navTop" title="回到頂部" aria-label="回到頂部">⥔</button>
-    <button id="navPrev" title="上一頁" aria-label="上一頁"></button>
-    <button id="navNext" title="下一頁" aria-label="下一頁"></button>
+    <button id="navPrev" title="上一頁" aria-label="上一頁">▲</button>
+    <button id="navNext" title="下一頁" aria-label="下一頁">▼</button>
   </div>
-  <!-- 隱藏的回到頂部 -->
-  <div id="backToTop">▲</div>
+
   <!-- 換算器模組 -->
   <section id="calculator">
     <div class="module">
-      <h2></h2>
+      <h2>卡片數 / 回合數 換算器</h2>
       <div class="mode-container">
-        <span class="mode-toggle active" id="btnR2C"></span>
-        <span class="mode-toggle" id="btnC2R"></span>
-        <button id="processBtn" title="" aria-label=""></button>
+        <span class="mode-toggle active" id="btnR2C">回合 → 卡片</span>
+        <span class="mode-toggle" id="btnC2R">卡片 → 回合</span>
+        <button id="processBtn" title="查看換算過程" aria-label="查看換算過程">換算過程</button>
       </div>
-      <div style="text-align: left; width: 100%;">
-        <label for="inputValue"></label>
+      <div class="calc-container">
+        <label for="inputValue">輸入數字：</label>
         <input type="text" id="inputValue" value="100" pattern="^[0-9]+$" inputmode="numeric">
-        <button id="calcBtn"></button>
-        <div class="result" id="result">→ </div>
-        <div id="processInfo"></div>
+        <button id="calcBtn">計算</button>
       </div>
+      <div class="result" id="result">→ </div>
+      <div id="processInfo"></div>
     </div>
   </section>
+
   <!-- 常用換算模組 -->
   <section id="common">
     <div class="module">
-      <h2></h2>
+      <h2>常用換算</h2>
       <div class="table-container">
         <div class="table-box">
-          <h3></h3>
+          <h3>回合 → 卡片</h3>
           <div class="table-responsive">
             <table id="r2cTable">
               <thead>
                 <tr>
-                  <th></th>
-                  <th></th>
+                  <th>回合數</th>
+                  <th>卡片數</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -97,13 +95,13 @@
           </div>
         </div>
         <div class="table-box">
-          <h3></h3>
+          <h3>卡片 → 回合</h3>
           <div class="table-responsive">
             <table id="c2rTable">
               <thead>
                 <tr>
-                  <th></th>
-                  <th></th>
+                  <th>卡片數</th>
+                  <th>回合數</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -113,29 +111,28 @@
       </div>
     </div>
   </section>
+
   <!-- 關係圖模組 -->
   <section id="chartSection">
     <div class="module">
-      <h2></h2>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <label for="chartType"></label>
-        <select id="chartType" style="font-size: 1rem; padding: 0.25rem;">
-          <option value="line"></option>
-          <option value="bar"></option>
+      <h2>卡數 - 回合數 關係圖</h2>
+      <div class="chart-controls">
+        <label for="chartType">圖表類型：</label>
+        <select id="chartType">
+          <option value="line" selected>折線圖</option>
+          <option value="bar">柱狀圖</option>
         </select>
-      </div>
-      <div id="chartControls">
         <label>
           <input type="checkbox" id="toggleAnnotations" checked>
-          <span id="annotationsLabel"></span>
+          <span id="annotationsLabel">顯示標註線</span>
         </label>
         <label>
           <input type="checkbox" id="togglePoints" checked>
-          <span id="pointsLabel"></span>
+          <span id="pointsLabel">顯示資料點</span>
         </label>
         <label>
           <input type="checkbox" id="toggleGrid" checked>
-          <span id="gridLabel"></span>
+          <span id="gridLabel">顯示網格線</span>
         </label>
       </div>
       <div class="chart-container">
@@ -143,30 +140,32 @@
       </div>
     </div>
   </section>
+
   <!-- 換算歷史記錄模組 -->
   <section id="history">
     <div class="module">
-      <h2></h2>
-      <button id="clearHistory"></button>
+      <h2>換算歷史記錄</h2>
+      <button id="clearHistory">清除歷史</button>
       <div class="table-responsive">
         <table id="historyTable">
           <thead>
             <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
+              <th>時間</th>
+              <th>模式</th>
+              <th>輸入值</th>
+              <th>結果</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <div id="historyPagination" style="text-align: center; margin-top: 1rem;"></div>
+      <div id="historyPagination"></div>
     </div>
   </section>
-  <!-- 底部製作者資訊 -->
-  <div id="hiddenCredits"></div>
-  <!-- 引入外部 JavaScript（確保 DOM 加載後執行） -->
+
+  <!-- 頁尾 Credits -->
+  <footer id="hiddenCredits">網頁、圖表製作：Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71</footer>
+  <!-- 引入外部 JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
