@@ -11,13 +11,13 @@
   };
   const CONFIG = {
     baseThreshold: 45,
-    baseArray: [0,1,2,4,5],
+    baseArray: [0, 1, 2, 4, 5],
     extraRanges: [
-      {a: 46, b: 111, f: 1},
-      {a: 112, b: 500, f: 2},
-      {a: 501, b: 1000, f: 3},
-      {a: 1001, b: 1500, f: 4},
-      {a: 1501, b: Infinity, f: 5}
+      { a: 46, b: 111, f: 1 },
+      { a: 112, b: 500, f: 2 },
+      { a: 501, b: 1000, f: 3 },
+      { a: 1001, b: 1500, f: 4 },
+      { a: 1501, b: Infinity, f: 5 }
     ],
     chart: { maxRounds: 1600, step: 50 }
   };
@@ -97,8 +97,8 @@
         click60: "超神的！！！！",
         click80: "比神還神！！！！"
       }
-    },
-    // 此處可補上其它語系（zh-CN、en、ja、ko）
+    }
+    // 其他語系略
   };
 
   // 根據語系回傳 locale
@@ -525,8 +525,8 @@
     }
   }
   function populateTables(){
-    const r2cValues = [111,200,300,1000,1500,2000,2500,10000,20000];
-    const c2rValues = [40,400,4000,8000,12000,16000,20000,40000,400000];
+    const r2cValues = [111, 200, 300, 1000, 1500, 2000, 2500, 10000, 20000];
+    const c2rValues = [40, 400, 4000, 8000, 12000, 16000, 20000, 40000, 400000];
     r2cValues.forEach(rounds => {
       const cards = roundsToCards(rounds);
       const tr = document.createElement("tr");
@@ -544,8 +544,8 @@
     const dataPoints = [];
     const maxRounds = CONFIG.chart.maxRounds;
     const step = CONFIG.chart.step;
-    for(let r=0; r<=maxRounds; r+=step){
-      dataPoints.push({x: r, y: Number(roundsToCards(r))});
+    for(let r = 0; r <= maxRounds; r += step){
+      dataPoints.push({ x: r, y: Number(roundsToCards(r)) });
     }
     const maxY = Number(roundsToCards(maxRounds));
     const ctx = document.getElementById("chart").getContext("2d");
@@ -600,6 +600,67 @@
   }
 
   //==============================
+  // 更新語系文字內容 - 完整版
+  //==============================
+  function updateLanguage(){
+    const t = translations[currentLang];
+    // 更新網頁標題
+    document.title = t.calculator.title;
+    
+    // 更新側邊選單連結
+    const menuCalc = document.getElementById("menuCalculator");
+    const menuCommon = document.getElementById("menuCommon");
+    const menuChart = document.getElementById("menuChartSection");
+    const menuHistory = document.getElementById("menuHistory");
+    if(menuCalc) menuCalc.textContent = t.nav.calculator;
+    if(menuCommon) menuCommon.textContent = t.nav.common;
+    if(menuChart) menuChart.textContent = t.nav.chartSection;
+    if(menuHistory) menuHistory.textContent = t.nav.history;
+    
+    // 更新 Calculator 模組
+    const calcHeading = document.querySelector("#calculator h2");
+    if(calcHeading) calcHeading.textContent = t.calculator.title;
+    const inputLabel = document.querySelector("label[for='inputValue']");
+    if(inputLabel) inputLabel.textContent = t.calculator.inputLabel;
+    if(calcBtn) calcBtn.textContent = t.calculator.calcBtn;
+    if(processBtn) processBtn.textContent = t.calculator.processBtn;
+    
+    // 更新 Common 模組
+    const commonHeading = document.querySelector("#common h2");
+    if(commonHeading) commonHeading.textContent = t.common.title;
+    const commonTables = document.querySelectorAll("#common .table-box h3");
+    if(commonTables.length >= 2){
+      commonTables[0].textContent = t.common.r2c;
+      commonTables[1].textContent = t.common.c2r;
+    }
+    
+    // 更新 Chart 模組
+    const chartHeading = document.querySelector("#chartSection h2");
+    if(chartHeading) chartHeading.textContent = t.chart.title;
+    const chartTypeLabel = document.querySelector("label[for='chartType']");
+    if(chartTypeLabel) chartTypeLabel.textContent = t.chart.chartTypeLabel;
+    const annotationsLabel = document.getElementById("annotationsLabel");
+    if(annotationsLabel) annotationsLabel.textContent = t.chart.showAnnotationsLabel;
+    const pointsLabel = document.getElementById("pointsLabel");
+    if(pointsLabel) pointsLabel.textContent = t.chart.showPointsLabel;
+    const gridLabel = document.getElementById("gridLabel");
+    if(gridLabel) gridLabel.textContent = t.chart.showGridLabel;
+    
+    // 更新 History 模組
+    const historyHeading = document.querySelector("#history h2");
+    if(historyHeading) historyHeading.textContent = t.history.title;
+    if(clearHistoryBtn) clearHistoryBtn.textContent = t.history.clearHistory;
+    
+    // 更新頁尾 Credits
+    const hiddenCredits = document.getElementById("hiddenCredits");
+    if(hiddenCredits) hiddenCredits.textContent = t.credits;
+    
+    // 更新網站副標題與彩蛋文字（若有定義）
+    if(siteTitleSub) siteTitleSub.textContent = t.siteTitleSub || "";
+    if(easterEggText) easterEggText.textContent = t.easterEgg ? t.easterEgg.click1 : "";
+  }
+
+  //==============================
   // 事件綁定
   //==============================
   calcBtn.addEventListener("click", updateResult);
@@ -625,57 +686,6 @@
     currentLang = langSelect.value;
     updateLanguage();
   });
-  // 更新語系文字內容
-function updateLanguage(){
-  const t = translations[currentLang];
-  // 更新網頁標題
-  document.title = t.calculator.title;
-  
-  // 更新側邊選單
-  document.getElementById("menuCalculator").textContent = t.nav.calculator;
-  document.getElementById("menuCommon").textContent = t.nav.common;
-  document.getElementById("menuChartSection").textContent = t.nav.chartSection;
-  document.getElementById("menuHistory").textContent = t.nav.history;
-  
-  // 更新 Calculator 模組
-  const calcHeading = document.querySelector("#calculator h2");
-  if(calcHeading) calcHeading.textContent = t.calculator.title;
-  const inputLabel = document.querySelector("label[for='inputValue']");
-  if(inputLabel) inputLabel.textContent = t.calculator.inputLabel;
-  if(calcBtn) calcBtn.textContent = t.calculator.calcBtn;
-  if(processBtn) processBtn.textContent = t.calculator.processBtn;
-  
-  // 更新 Common 模組
-  const commonHeading = document.querySelector("#common h2");
-  if(commonHeading) commonHeading.textContent = t.common.title;
-  const commonTables = document.querySelectorAll("#common .table-box h3");
-  if(commonTables.length >= 2){
-    commonTables[0].textContent = t.common.r2c;
-    commonTables[1].textContent = t.common.c2r;
-  }
-  
-  // 更新 Chart 模組
-  const chartHeading = document.querySelector("#chartSection h2");
-  if(chartHeading) chartHeading.textContent = t.chart.title;
-  const chartTypeLabel = document.querySelector("label[for='chartType']");
-  if(chartTypeLabel) chartTypeLabel.textContent = t.chart.chartTypeLabel;
-  const annotationsLabel = document.getElementById("annotationsLabel");
-  if(annotationsLabel) annotationsLabel.textContent = t.chart.showAnnotationsLabel;
-  const pointsLabel = document.getElementById("pointsLabel");
-  if(pointsLabel) pointsLabel.textContent = t.chart.showPointsLabel;
-  const gridLabel = document.getElementById("gridLabel");
-  if(gridLabel) gridLabel.textContent = t.chart.showGridLabel;
-  
-  // 更新 History 模組
-  const historyHeading = document.querySelector("#history h2");
-  if(historyHeading) historyHeading.textContent = t.history.title;
-  if(clearHistoryBtn) clearHistoryBtn.textContent = t.history.clearHistory;
-  
-  // 更新頁尾 Credits
-  const hiddenCredits = document.getElementById("hiddenCredits");
-  if(hiddenCredits) hiddenCredits.textContent = t.credits;
-}
-
   clearHistoryBtn.addEventListener("click", function(){
     historyData = [];
     saveLS(LS_KEYS.history, historyData);
