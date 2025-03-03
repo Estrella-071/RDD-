@@ -692,7 +692,7 @@
     saveLS(LS_KEYS.history, historyData);
     renderHistory();
   });
-  // 新增圖表控制區事件，變更後重新生成圖表
+  // 圖表控制區事件
   chartTypeSelect.addEventListener("change", function(){
     currentChartType = chartTypeSelect.value;
     generateChart();
