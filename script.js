@@ -625,10 +625,57 @@
     currentLang = langSelect.value;
     updateLanguage();
   });
-  function updateLanguage(){
-    // 更新各文字內容（根據 translations[currentLang] 設定各元素 innerText）
-    // 此處可根據需求進行各元素文字的替換
+  // 更新語系文字內容
+function updateLanguage(){
+  const t = translations[currentLang];
+  // 更新網頁標題
+  document.title = t.calculator.title;
+  
+  // 更新側邊選單
+  document.getElementById("menuCalculator").textContent = t.nav.calculator;
+  document.getElementById("menuCommon").textContent = t.nav.common;
+  document.getElementById("menuChartSection").textContent = t.nav.chartSection;
+  document.getElementById("menuHistory").textContent = t.nav.history;
+  
+  // 更新 Calculator 模組
+  const calcHeading = document.querySelector("#calculator h2");
+  if(calcHeading) calcHeading.textContent = t.calculator.title;
+  const inputLabel = document.querySelector("label[for='inputValue']");
+  if(inputLabel) inputLabel.textContent = t.calculator.inputLabel;
+  if(calcBtn) calcBtn.textContent = t.calculator.calcBtn;
+  if(processBtn) processBtn.textContent = t.calculator.processBtn;
+  
+  // 更新 Common 模組
+  const commonHeading = document.querySelector("#common h2");
+  if(commonHeading) commonHeading.textContent = t.common.title;
+  const commonTables = document.querySelectorAll("#common .table-box h3");
+  if(commonTables.length >= 2){
+    commonTables[0].textContent = t.common.r2c;
+    commonTables[1].textContent = t.common.c2r;
   }
+  
+  // 更新 Chart 模組
+  const chartHeading = document.querySelector("#chartSection h2");
+  if(chartHeading) chartHeading.textContent = t.chart.title;
+  const chartTypeLabel = document.querySelector("label[for='chartType']");
+  if(chartTypeLabel) chartTypeLabel.textContent = t.chart.chartTypeLabel;
+  const annotationsLabel = document.getElementById("annotationsLabel");
+  if(annotationsLabel) annotationsLabel.textContent = t.chart.showAnnotationsLabel;
+  const pointsLabel = document.getElementById("pointsLabel");
+  if(pointsLabel) pointsLabel.textContent = t.chart.showPointsLabel;
+  const gridLabel = document.getElementById("gridLabel");
+  if(gridLabel) gridLabel.textContent = t.chart.showGridLabel;
+  
+  // 更新 History 模組
+  const historyHeading = document.querySelector("#history h2");
+  if(historyHeading) historyHeading.textContent = t.history.title;
+  if(clearHistoryBtn) clearHistoryBtn.textContent = t.history.clearHistory;
+  
+  // 更新頁尾 Credits
+  const hiddenCredits = document.getElementById("hiddenCredits");
+  if(hiddenCredits) hiddenCredits.textContent = t.credits;
+}
+
   clearHistoryBtn.addEventListener("click", function(){
     historyData = [];
     saveLS(LS_KEYS.history, historyData);
