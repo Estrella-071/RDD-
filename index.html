@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>卡片數 / 回合數 換算器</title>
+  <!-- 載入 Google 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- 引入外部 CSS -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js 與插件 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+</head>
+<body>
+  <!-- 側邊選單開關按鈕 -->
+  <button id="sideMenuToggle" title="切換選單">☰</button>
+  <!-- 側邊選單 -->
+  <div id="sideMenu">
+    <!-- 網站標題（整個容器可點擊） -->
+    <div id="siteTitleContainer">
+      <h1 id="siteTitle">Random Dice Defense : PvP</h1>
+      <span id="siteTitleSub"></span>
+      <span id="easterEggText"></span>
+    </div>
+    <!-- 語言切換區塊 -->
+    <div id="languageToggle">
+      <svg id="globeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" style="width:1.2rem; height:1.2rem;">
+        <path d="M16 2.667C8.64 2.667 2.667 8.64 2.667 16S8.64 29.333 16 29.333 29.333 23.36 29.333 16 23.36 2.667 16 2.667zm0 24C9.76 26.667 4.667 21.573 4.667 16c0-5.573 5.093-10.667 11.333-10.667 6.24 0 11.333 5.093 11.333 10.667 0 5.573-5.093 10.667-11.333 10.667z"/>
+        <path d="M14.667 4.76V27.24c-5.293-.64-9.333-5.107-9.333-11.24 0-6.133 5.093-10.6 9.333-11.24zM17.333 27.24V4.76c5.293.64 9.333 5.107 9.333 11.24 0 6.133-4.04 10.6-9.333 11.24z"/>
+      </svg>
+      <span>語言</span>
+      <select id="langSelect" aria-label="選擇語言">
+        <option value="zh-TW">繁中</option>
+        <option value="zh-CN">简中</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+    </div>
+    <!-- 導覽連結 -->
+    <a href="#calculator" id="menuCalculator" data-target="calculator"></a>
+    <a href="#common" id="menuCommon" data-target="common"></a>
+    <a href="#chartSection" id="menuChartSection" data-target="chartSection"></a>
+    <a href="#history" id="menuHistory" data-target="history"></a>
+    <!-- 黑／白模式切換按鈕 -->
+    <div id="darkModeToggle">
+      <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"></svg>
+      <span id="darkModeText"></span>
+    </div>
+  </div>
+  <!-- 右下角導航按鈕 -->
+  <div id="pageNav">
+    <button id="navTop" title="回到頂部" aria-label="回到頂部">⥔</button>
+    <button id="navPrev" title="上一頁" aria-label="上一頁"></button>
+    <button id="navNext" title="下一頁" aria-label="下一頁"></button>
+  </div>
+  <!-- 隱藏的回到頂部 -->
+  <div id="backToTop">▲</div>
+  <!-- 換算器模組 -->
+  <section id="calculator">
+    <div class="module">
+      <h2></h2>
+      <div class="mode-container">
+        <span class="mode-toggle active" id="btnR2C"></span>
+        <span class="mode-toggle" id="btnC2R"></span>
+        <button id="processBtn" title="" aria-label=""></button>
+      </div>
+      <div style="text-align: left; width: 100%;">
+        <label for="inputValue"></label>
+        <input type="text" id="inputValue" value="100" pattern="^[0-9]+$" inputmode="numeric">
+        <button id="calcBtn"></button>
+        <div class="result" id="result">→ </div>
+        <div id="processInfo"></div>
+      </div>
+    </div>
+  </section>
+  <!-- 常用換算模組 -->
+  <section id="common">
+    <div class="module">
+      <h2></h2>
+      <div class="table-container">
+        <div class="table-box">
+          <h3></h3>
+          <div class="table-responsive">
+            <table id="r2cTable">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="table-box">
+          <h3></h3>
+          <div class="table-responsive">
+            <table id="c2rTable">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- 關係圖模組 -->
+  <section id="chartSection">
+    <div class="module">
+      <h2></h2>
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <label for="chartType"></label>
+        <select id="chartType" style="font-size: 1rem; padding: 0.25rem;">
+          <option value="line"></option>
+          <option value="bar"></option>
+        </select>
+      </div>
+      <div id="chartControls">
+        <label>
+          <input type="checkbox" id="toggleAnnotations" checked>
+          <span id="annotationsLabel"></span>
+        </label>
+        <label>
+          <input type="checkbox" id="togglePoints" checked>
+          <span id="pointsLabel"></span>
+        </label>
+        <label>
+          <input type="checkbox" id="toggleGrid" checked>
+          <span id="gridLabel"></span>
+        </label>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+  </section>
+  <!-- 換算歷史記錄模組 -->
+  <section id="history">
+    <div class="module">
+      <h2></h2>
+      <button id="clearHistory"></button>
+      <div class="table-responsive">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="historyPagination" style="text-align: center; margin-top: 1rem;"></div>
+    </div>
+  </section>
+  <!-- 底部製作者資訊 -->
+  <div id="hiddenCredits"></div>
+  <!-- 引入外部 JavaScript（確保 DOM 加載後執行） -->
+  <script src="script.js"></script>
+</body>
+</html>
