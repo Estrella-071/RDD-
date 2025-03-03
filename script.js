@@ -98,7 +98,7 @@
         click80: "比神還神！！！！"
       }
     }
-    // 其他語系略
+    // 其他語系略，可依需求擴充
   };
 
   // 根據語系回傳 locale
@@ -207,8 +207,9 @@
   // 側邊選單開關功能
   //==============================
   sideMenuToggle.addEventListener("click", function(){
-    document.getElementById("sideMenu").classList.toggle("collapsed");
-    if(document.getElementById("sideMenu").classList.contains("collapsed")){
+    const sideMenu = document.getElementById("sideMenu");
+    sideMenu.classList.toggle("collapsed");
+    if(sideMenu.classList.contains("collapsed")){
       sideMenuToggle.style.left = "0px";
     } else {
       sideMenuToggle.style.left = "250px";
@@ -691,6 +692,14 @@
     saveLS(LS_KEYS.history, historyData);
     renderHistory();
   });
+  // 新增圖表控制區事件，變更後重新生成圖表
+  chartTypeSelect.addEventListener("change", function(){
+    currentChartType = chartTypeSelect.value;
+    generateChart();
+  });
+  toggleAnnotationsCheckbox.addEventListener("change", generateChart);
+  togglePointsCheckbox.addEventListener("change", generateChart);
+  toggleGridCheckbox.addEventListener("change", generateChart);
 
   function addProcessTopBtn(){
     if(!document.getElementById("processTopBtn")){
