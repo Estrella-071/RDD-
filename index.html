@@ -3,55 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>卡片數 / 回合數 換算器</title>
-  <!-- Load Roboto font -->
+  <title>Card / Wave Converter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Chart.js and annotation plugin -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
   <style>
-    /* Reset and box-sizing */
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       overflow-x: hidden;
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Open Sans', sans-serif;
+      line-height: 1.6;
     }
-    /* Disable vertical scroll on desktop */
     @media (min-width: 769px) { body { overflow-y: hidden; } }
     :root {
-      --bg-color: #f9f9f9;
+      --bg-color: #f0f4f8;
       --text-color: #333;
       --container-bg: #fff;
       --primary-color: #3498db;
-      --primary-hover: #2980b9;
+      --primary-active: #2980b9;
       --table-border: #ddd;
       --shadow-light: rgba(0,0,0,0.1);
       --shadow-dark: rgba(0,0,0,0.2);
       --button-shadow: 0 3px 6px rgba(0,0,0,0.15);
-      --bg-gradient-light: linear-gradient(-45deg, #ffffff, #e6f7ff, #ffffff, #e6f7ff);
+      --bg-gradient-light: linear-gradient(-45deg, #f0f4f8, #d9e2ec, #f0f4f8, #d9e2ec);
     }
     .dark {
-      --bg-color: #121212;
-      --text-color: #ccc;
-      --container-bg: #1e1e1e;
-      --primary-color: #2980b9;
-      --primary-hover: #1f6391;
-      --table-border: #555;
-      --shadow-light: rgba(0,0,0,0.2);
-      --shadow-dark: rgba(0,0,0,0.4);
-      --button-shadow: 0 5px 10px rgba(0,0,0,0.2);
-      --bg-gradient-dark: linear-gradient(-45deg, #1c1c3c, #32325d, #1c1c3c, #32325d);
+      --bg-color: #1a1a1a;
+      --text-color: #ddd;
+      --container-bg: #242424;
+      --primary-color: #3498db;
+      --primary-active: #2980b9;
+      --table-border: #666;
+      --shadow-light: rgba(0,0,0,0.3);
+      --shadow-dark: rgba(0,0,0,0.5);
+      --button-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      --bg-gradient-dark: linear-gradient(-45deg, #1a1a1a, #242424, #1a1a1a, #242424);
     }
     body {
       background: var(--bg-gradient-light);
       background-size: 200% 200%;
       animation: bgShift 15s ease infinite;
       color: var(--text-color);
+      font-size: 16px;
       transition: background 1s ease, color 1s ease;
     }
     body.dark {
@@ -64,9 +62,19 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--container-bg);
+    }
     section {
       min-height: 100vh;
-      padding: 1.25rem 0.625rem;
+      padding: 2rem 1rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -76,97 +84,147 @@
       background: var(--container-bg);
       border-radius: 1rem;
       box-shadow: 0.5rem 0.5rem 1rem var(--shadow-light), -0.5rem -0.5rem 1rem var(--shadow-light);
-      padding: 1.25rem 1.875rem;
-      margin: 0.625rem auto;
+      padding: 2.5rem;
+      margin: 1rem auto;
       width: 90%;
-      max-width: 56.25rem;
+      max-width: 60rem;
       transition: box-shadow 0.3s;
     }
     .module:hover {
-      box-shadow: 0.625rem 0.625rem 1.25rem var(--shadow-dark), -0.625rem -0.625rem 1.25rem var(--shadow-dark);
+      box-shadow: 0.75rem 0.75rem 1.5rem var(--shadow-dark), -0.75rem -0.75rem 1.5rem var(--shadow-dark);
     }
     .module h2 {
       text-align: center;
-      margin-bottom: 1.25rem;
-      font-size: 1.6rem;
+      margin-bottom: 2rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       text-shadow: 0 2px 4px var(--shadow-light);
     }
     body.dark .module h2 { text-shadow: 0 2px 4px var(--shadow-dark); }
-    /* Mode toggle container */
     .mode-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 1rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .mode-toggles {
+      display: flex;
+      gap: 0.75rem;
     }
     .mode-toggle {
-      padding: 0.625rem 1.25rem;
-      border: 0.125rem solid var(--primary-color);
-      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--primary-color);
+      border-radius: 0.75rem;
       cursor: pointer;
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      background: transparent;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
       color: var(--primary-color);
-      background: linear-gradient(45deg, #fff, #f0f0f0);
-      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+      user-select: none;
     }
-    body.dark .mode-toggle {
-      background: #444;
-      border-color: #444;
-      color: #ccc;
-    }
-    body.dark .mode-toggle.active {
-      background: #2980b9;
-      border-color: #2980b9;
+    .mode-toggle.active {
+      background: var(--primary-active);
       color: #fff;
     }
-    .mode-toggle:hover { transform: scale(1.1); }
-    /* Table styles */
+    .mode-toggle:hover { transform: scale(1.05); }
+    .mode-toggle:active { transform: scale(0.95); }
     .table-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 2rem;
       justify-content: center;
-      margin-top: 1.25rem;
+      margin-top: 2rem;
     }
-    .table-box { flex: 1 1 45%; max-width: 45%; margin-bottom: 1.25rem; }
-    .table-responsive { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
+    .table-box {
+      flex: 1 1 45%;
+      max-width: 45%;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .table-responsive {
+      width: 100%;
+      border-radius: 0.75rem;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
     th, td {
-      padding: 0.5rem 0.75rem;
+      padding: 0.75rem 1rem;
       text-align: center;
-      border-bottom: 0.125rem solid var(--primary-color);
-      font-size: 0.95rem;
+      border-bottom: 1px solid var(--table-border);
+      font-size: 1rem;
+      word-wrap: break-word;
     }
-    th { background: var(--primary-color); color: #fff; }
-    /* Side menu */
+    th {
+      background: var(--primary-color);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    td { font-weight: 400; }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    body.dark table th { background: var(--primary-color); color: #fff; }
+    body.dark table td { color: #ddd; border-bottom-color: var(--table-border); }
+    body.dark tr:nth-child(even) { background-color: #2a2a2a; }
+    .result table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .result td {
+      padding: 0.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--table-border);
+      white-space: normal;
+      word-break: break-word;
+    }
+    .result tr:nth-child(even) { background: #f2f2f2; }
+    body.dark .result tr:nth-child(even) { background: #2a2a2a; }
     #sideMenu {
       position: fixed;
       top: 0;
       left: 0;
       width: 240px;
       height: 100%;
-      background: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.8);
       backdrop-filter: blur(10px);
       box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease, background 0.3s ease;
+      border-radius: 0 1rem 1rem 0;
+      transition: transform 0.3s ease;
       z-index: 1300;
       padding: 1.5rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      transform: translateX(0);
     }
-    #sideMenu.collapsed { transform: translateX(-100%); }
-    body.dark #sideMenu { background: rgba(34,34,34,0.7); }
+    #sideMenu.collapsed {
+      transform: translateX(-100%);
+    }
+    body.dark #sideMenu { background: rgba(34,34,34,0.8); }
     #sideMenu a {
       color: #333;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 1rem;
       padding: 0.5rem 0.75rem;
-      border-radius: 4px;
+      border-radius: 0.5rem;
       transition: transform 0.3s ease, background 0.3s ease;
+      user-select: none;
     }
     body.dark #sideMenu a { color: #ddd; }
     #sideMenu a.active, #sideMenu a:hover {
@@ -174,7 +232,6 @@
       color: #fff;
       transform: scale(1.05);
     }
-    /* Site title */
     #siteTitleContainer {
       text-align: center;
       margin-bottom: 1rem;
@@ -184,49 +241,34 @@
     #siteTitleContainer:hover { transform: scale(1.02); }
     #siteTitleContainer h1 {
       margin: 0;
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
     }
-    #siteTitleSub {
+    #siteTitleSub, #easterEggText {
       display: block;
       margin-top: 0.25rem;
-      font-size: 1rem;
-      color: var(--primary-color);
-      font-weight: bold;
-    }
-    #easterEggText {
-      display: block;
-      margin-top: 0.25rem;
-      font-size: 1rem;
-      font-weight: bold;
+      font-size: 0.9rem;
+      font-weight: 600;
       color: var(--primary-color);
     }
-    /* Dark mode adjustments */
     body.dark select, body.dark input[type="text"] {
       background: #333;
       color: #fff;
       border-color: #555;
+      border-radius: 0.5rem;
+    }
+    body.dark select option {
+      background: #333;
+      color: #fff;
     }
     body.dark .result { background: #333; color: #fff; }
-    /* Dark mode toggle */
-    #darkModeToggle {
-      margin-top: auto;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border-top: 1px solid #ccc;
-      transition: transform 0.3s ease;
-    }
-    #darkModeToggle:hover { transform: scale(1.05); }
-    #darkModeToggle svg { width: 1.5rem; height: 1.5rem; }
-    #darkModeToggle span { font-size: 1rem; color: #333; }
-    body.dark #darkModeToggle span { color: #eee; }
-    /* Side menu toggle button */
+    .result.error { color: red; }
     #sideMenuToggle {
       position: fixed;
       top: 10px;
-      left: 250px;
+      left: 10px;
       background: rgba(255,255,255,0.7);
       backdrop-filter: blur(10px);
       color: #333;
@@ -236,27 +278,100 @@
       height: 40px;
       cursor: pointer;
       z-index: 1400;
-      transition: left 0.3s ease, background 0.3s ease;
+      transition: left 0.3s ease, transform 0.3s ease;
       font-size: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
     }
-    body.dark #sideMenuToggle { background: rgba(34,34,34,0.7); color: #ddd; }
-    #sideMenuToggle:hover { transform: scale(1.1); }
-    /* Process button and info */
+    #settingsToggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 1500;
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    #settingsToggle.rotate {
+      transform: rotate(180deg);
+    }
+    #navTop {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      color: #333;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    #navTop:hover {
+      transform: scale(1.1);
+    }
+    body.dark #sideMenuToggle, body.dark #settingsToggle, body.dark #navTop {
+      background: rgba(34,34,34,0.7);
+      color: #ddd;
+    }
+    #sideMenuToggle:hover, #settingsToggle:hover, #navTop:hover {
+      transform: scale(1.1);
+    }
+    @media (min-width: 769px) {
+      #sideMenuToggle.moved { left: 250px; }
+    }
+    @media (max-width: 768px) {
+      .table-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .table-box {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      .copyBtn {
+        position: relative;
+        margin-top: 0.5rem;
+      }
+    }
     #processBtn {
-      background: var(--primary-hover);
+      background: var(--primary-color);
       color: #fff;
       border: none;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.9rem;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.2rem;
       border-radius: 0.5rem;
       cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      user-select: none;
       margin-left: 0.5rem;
-      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    #processBtn:hover { background: var(--primary-color); }
+    #processBtn:hover {
+      background: var(--primary-active);
+      transform: translateY(-2px);
+    }
+    #processBtn:active { transform: scale(0.98); }
     #processInfo {
       max-height: 0;
       overflow-y: auto;
@@ -265,7 +380,7 @@
       margin-top: 0.5rem;
       padding: 0 0.5rem;
       background: #fff;
-      border-radius: 0.5rem;
+      border-radius: 0.75rem;
       font-size: 0.9rem;
       white-space: pre-wrap;
       font-family: monospace;
@@ -273,92 +388,85 @@
       position: relative;
       z-index: 500;
       color: #000;
-      border: 0.125rem solid var(--table-border);
+      border: 2px solid var(--table-border);
     }
     body.dark #processInfo { background: #333; color: #fff; }
     #processInfo.visible {
       max-height: 15rem;
       opacity: 1;
       padding: 0.5rem;
-      padding-bottom: 3rem;
     }
-    #processTopBtn {
-      position: absolute;
-      bottom: 0.5rem;
-      right: 0.5rem;
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 2.5rem;
-      height: 2.5rem;
-      font-size: 1.3rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #processTopBtn:hover { background: var(--primary-hover); }
     .result {
       margin-top: 1rem;
       padding: 0.75rem;
       background: #fff;
-      border-radius: 0.5rem;
+      border-radius: 0.75rem;
       text-align: left;
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 600;
       color: var(--primary-color);
       opacity: 0;
-      transition: opacity 0.3s;
+      transform: translateX(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      max-height: 10rem;
+      overflow-y: auto;
+      overflow-x: auto;
     }
-    .result.visible { opacity: 1; }
-    /* Chart styles */
-    .chart-container { position: relative; height: 28rem; width: 100%; }
+    .result.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .copyBtn {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .copyBtn:hover {
+      background: var(--primary-active);
+      transform: scale(1.05);
+    }
+    .chart-container {
+      position: relative;
+      height: 30rem;
+      width: 100%;
+      margin: 0 auto;
+      background: #f9f9f9;
+      border-radius: 1rem;
+    }
+    body.dark .chart-container { background: #1e1e1e; }
     #chartControls {
       text-align: center;
       margin-bottom: 1rem;
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1rem;
       opacity: 0;
       animation: fadeIn 0.5s forwards;
+      flex-wrap: wrap;
     }
-    #chartControls label { font-size: 1rem; color: var(--text-color); cursor: pointer; }
-    /* Process animation */
-    #processInfo span.char {
-      opacity: 0;
-      transition: opacity 0.05s ease;
-      position: relative;
-      display: inline-block;
-    }
-    .blinker {
-      position: absolute;
-      bottom: -4px;
-      right: -6px;
-      font-size: 0.8em;
-      animation: blink 1s ease-in-out infinite;
-    }
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
-    }
-    /* Credits */
-    #hiddenCredits {
+    #chartControls label { font-size: 0.9rem; color: var(--text-color); cursor: pointer; }
+    #footer {
       position: fixed;
-      bottom: 0;
+      bottom: -50px;
       left: 0;
       width: 100%;
+      height: 50px;
       background: #808080;
       color: #fff;
       text-align: center;
       padding: 0.75rem;
       box-shadow: 0 -0.25rem 0.75rem rgba(0,0,0,0.3);
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
+      border-radius: 1rem 1rem 0 0;
       z-index: 500;
-      font-size: 1rem;
+      font-size: 0.9rem;
+      transition: bottom 0.3s ease;
     }
-    #hiddenCredits.visible { transform: translateY(0); }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    /* Page navigation */
     #pageNav {
       position: fixed;
       bottom: 20px;
@@ -368,137 +476,488 @@
       gap: 12px;
       z-index: 1200;
     }
-    #pageNav button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, #3498db, #2980b9);
-      color: #fff;
-      font-size: 1.8rem;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #pageNav button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    }
-    #navPrev::before { content: "▲"; }
-    #navNext::before { content: "▼"; }
-    /* Button styles */
     button {
-      background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+      background: var(--primary-color);
       color: #fff;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
-      border-radius: 0.75rem;
+      border-radius: 0.5rem;
       cursor: pointer;
-      margin: 0.625rem 0;
-      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-      box-shadow: var(--button-shadow);
+      margin: 0.5rem 0;
+      transition: background 0.3s, transform 0.2s;
+      user-select: none;
     }
     button:hover {
-      background: linear-gradient(45deg, var(--primary-hover), var(--primary-color), var(--primary-hover));
-      background-size: 200% 200%;
-      animation: gradientShift 1.5s ease infinite;
+      background: var(--primary-active);
       transform: translateY(-2px);
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     }
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    button:active { transform: scale(0.98); }
+    button.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
-    /* Input and select styles */
     input[type="text"], select {
       padding: 0.5rem;
-      border: 0.125rem solid var(--primary-color);
+      border: 2px solid var(--primary-color);
       border-radius: 0.5rem;
-      font-size: 1.1rem;
-      margin: 0.625rem 0;
+      font-size: 1rem;
+      margin: 0.5rem 0;
       transition: border-color 0.3s, box-shadow 0.3s;
       background: #fff;
       color: #333;
+      width: 100px;
     }
     input[type="text"]:focus, select:focus {
       outline: none;
-      border-color: var(--primary-hover);
+      border-color: var(--primary-active);
       box-shadow: 0 0 5px rgba(52,152,219,0.5);
     }
-    /* Mobile adjustments */
+    #historyTable { font-size: 0.9rem; }
+    #historyTable tbody tr {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #historyTable tbody tr.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #historyTable td {
+      white-space: normal;
+      word-break: break-word;
+      padding: 0.75rem 0.5rem;
+    }
+    #historyPagination {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      margin-top: 1rem;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    #historyPagination button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #historyPagination button:hover {
+      background: var(--primary-active);
+    }
+    #clearInput {
+      display: none;
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #999;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+    .subtle-btn {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .subtle-btn:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    @keyframes deleteAnimation {
+      0% { opacity: 1; transform: scale(1); color: inherit; }
+      50% { opacity: 0.5; transform: scale(1.2); color: red; }
+      100% { opacity: 0; transform: scale(0.5); color: red; }
+    }
+    .delete-anim {
+      animation: deleteAnimation 0.3s ease forwards;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .card-container {
+      position: relative;
+      cursor: pointer;
+    }
+    .reward-symbol {
+      font-size: 0.8em;
+      vertical-align: super;
+      cursor: pointer;
+      margin-left: 2px;
+    }
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1900;
+    }
+    #rewardModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    body.dark #rewardModal {
+      background: rgba(34,34,34,0.8);
+      color: #ddd;
+    }
+    #rewardModal.visible {
+      opacity: 1;
+    }
+    #rewardModal .content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #rewardModal h3 {
+      margin: 0;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+    #rewardModal select {
+      width: auto;
+      max-width: 200px;
+    }
+    #rewardDetails dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    #rewardDetails dt {
+      font-weight: bold;
+      text-align: right;
+    }
+    #rewardDetails dd {
+      margin: 0;
+      text-align: left;
+    }
+    #settingsPopup {
+      position: fixed;
+      top: 50px;
+      right: 10px;
+      background: var(--container-bg);
+      border: 1px solid var(--primary-color);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 4px 8px var(--shadow-light);
+      z-index: 1600;
+      width: 200px;
+      color: var(--text-color);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+      pointer-events: none;
+    }
+    #settingsPopup.visible {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+      pointer-events: auto;
+    }
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .settings-item label {
+      margin-right: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-color);
+    }
+    #settingsPopup select, #settingsPopup button {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--primary-color);
+      border-radius: 0.25rem;
+      background: var(--container-bg);
+      color: var(--text-color);
+    }
+    #settingsPopup button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #settingsPopup button:hover {
+      background: var(--primary-active);
+    }
     @media (max-width: 768px) {
-      #calculator > div[style] {
+      body { font-size: 14px; }
+      .module {
+        padding: 1.5rem;
+        width: 95%;
+      }
+      .mode-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .mode-toggles {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
+        justify-content: center;
       }
-      #calculator input[type="text"] { flex: 1; }
-      #calcBtn { margin-left: 0.5rem; }
+      .mode-toggle {
+        flex: 1 1 auto;
+        min-width: 120px;
+        margin: 0.25rem;
+      }
+      #calculator > div[style] {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #inputValue {
+        width: 100%;
+      }
+      #processBtn {
+        margin-left: 0;
+        margin-top: 0.5rem;
+      }
+      .copyBtn {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .module h2 { font-size: 1.5rem; }
+      .table-box {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      .chart-container { height: 40rem; }
+      #historyTable { font-size: 0.8rem; }
+      .result table td { white-space: normal; word-break: break-word; }
+      button { width: 100%; margin: 0.5rem 0; }
+      input[type="text"] { font-size: 0.9rem; }
+      #sideMenu {
+        width: 100%;
+        height: auto;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        transform: translateY(0);
+        border-radius: 1rem 1rem 0 0;
+      }
+      #sideMenu.collapsed {
+        transform: translateY(100%);
+      }
+      #sideMenuToggle {
+        top: 10px;
+        left: 10px;
+        right: auto;
+        bottom: auto;
+      }
+    }
+    @media (max-width: 768px) {
+      #historyTable thead {
+        display: none;
+      }
+      #historyTable tr {
+        display: block;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--table-border);
+      }
+      #historyTable td {
+        display: block;
+        text-align: left;
+        padding: 0.25rem 0;
+        font-size: 0.9rem;
+      }
+      #historyTable td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        margin-right: 0.5rem;
+      }
+    }
+    @media (prefers-reduced-motion: reduce), (body.reduce-motion *) {
+      * { transition: none !important; animation: none !important; }
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-color);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 2000;
+    }
+    .notification.visible {
+      opacity: 1;
+    }
+    .easter-egg {
+      position: fixed;
+      font-size: 2rem;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 1s ease;
+      z-index: 1000;
+    }
+    .easter-egg.visible {
+      opacity: 1;
+      transform: translateY(-100vh);
+    }
+    .dot-nav {
+      position: fixed;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 1200;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease, border 0.3s ease;
+    }
+    .dot:hover {
+      transform: scale(1.2);
+    }
+    .dot.active {
+      transform: scale(1.5);
+      background: transparent;
+      border: 2px solid var(--primary-color);
+    }
+    @media (min-width: 769px) {
+      .dot-nav {
+        display: flex;
+      }
+    }
+    #reduceMotion {
+      appearance: none;
+      width: 40px;
+      height: 20px;
+      background: #ccc;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #reduceMotion::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    #reduceMotion:checked {
+      background: var(--primary-color);
+    }
+    #reduceMotion:checked::after {
+      transform: translateX(20px);
     }
   </style>
 </head>
 <body>
-  <!-- Side menu toggle -->
-  <button id="sideMenuToggle" title="Toggle Menu">☰</button>
-  <!-- Side menu -->
-  <div id="sideMenu">
+  <button id="sideMenuToggle" title="Toggle Menu" aria-label="Toggle Side Menu">☰</button>
+  <button id="settingsToggle" title="Settings" aria-label="Settings">⚙️</button>
+  <div id="sideMenu" class="collapsed">
     <div id="siteTitleContainer">
       <h1 id="siteTitle">Random Dice Defense : PvP</h1>
       <span id="siteTitleSub"></span>
       <span id="easterEggText"></span>
     </div>
-    <div id="languageToggle">
-      <svg id="globeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32" style="width:1.2rem; height:1.2rem;">
-        <path d="M16 2.667C8.64 2.667 2.667 8.64 2.667 16S8.64 29.333 16 29.333 29.333 23.36 29.333 16 23.36 2.667 16 2.667zm0 24C9.76 26.667 4.667 21.573 4.667 16c0-5.573 5.093-10.667 11.333-10.667 6.24 0 11.333 5.093 11.333 10.667 0 5.573-5.093 10.667-11.333 10.667z"/>
-        <path d="M14.667 4.76V27.24c-5.293-.64-9.333-5.107-9.333-11.24 0-6.133 5.093-10.6 9.333-11.24zM17.333 27.24V4.76c5.293.64 9.333 5.107 9.333 11.24 0 6.133-4.04 10.6-9.333 11.24z"/>
-      </svg>
-      <span>語言</span>
-      <select id="langSelect" aria-label="Select Language">
-        <option value="zh-TW">繁中</option>
-        <option value="zh-CN">简中</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-      </select>
-    </div>
     <a href="#calculator" id="menuCalculator" data-target="calculator"></a>
     <a href="#common" id="menuCommon" data-target="common"></a>
     <a href="#chartSection" id="menuChartSection" data-target="chartSection"></a>
     <a href="#history" id="menuHistory" data-target="history"></a>
-    <div id="darkModeToggle">
-      <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"></svg>
-      <span id="darkModeText"></span>
+  </div>
+  <div id="settingsPopup">
+    <div class="settings-item">
+      <label for="langSelect">🌐 [L] Language</label>
+      <select id="langSelect" aria-label="Select Language">
+        <option value="auto">Auto-Detect</option>
+        <option value="zh-TW">繁中 (zh-TW)</option>
+        <option value="zh-CN">简中 (zh-CN)</option>
+        <option value="en">English (en)</option>
+        <option value="ja">日本語 (ja)</option>
+        <option value="ko">한국어 (ko)</option>
+      </select>
     </div>
+    <div class="settings-item">
+      <label for="themeSelect">🎨 [T] Theme</label>
+      <select id="themeSelect" aria-label="Select Theme">
+        <option value="system">System Default</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+    <div class="settings-item">
+      <label for="reduceMotion">Reduce Animation</label>
+      <input type="checkbox" id="reduceMotion" />
+    </div>
+    <button id="clearHistory">Clear History</button>
   </div>
-  <!-- Page navigation -->
   <div id="pageNav">
-    <button id="navTop" title="Back to Top" aria-label="Back to Top">⥔</button>
-    <button id="navPrev" title="Previous Page" aria-label="Previous Page"></button>
-    <button id="navNext" title="Next Page" aria-label="Next Page"></button>
+    <button id="navTop">⥔</button>
   </div>
-  <!-- Calculator section -->
+  <div id="dotNav" class="dot-nav">
+    <span class="dot" data-section="calculator"></span>
+    <span class="dot" data-section="common"></span>
+    <span class="dot" data-section="chartSection"></span>
+    <span class="dot" data-section="history"></span>
+  </div>
   <section id="calculator">
     <div class="module">
       <h2></h2>
       <div class="mode-container">
-        <span class="mode-toggle active" id="btnR2C"></span>
-        <span class="mode-toggle" id="btnC2R"></span>
-        <button id="processBtn" title="Conversion Process" aria-label="Conversion Process"></button>
+        <div class="mode-toggles">
+          <button class="mode-toggle active" id="btnW2C"></button>
+          <button class="mode-toggle" id="btnC2W"></button>
+        </div>
+        <button id="processBtn" aria-label="Show Conversion Process">?</button>
       </div>
-      <div style="text-align: left; width: 100%;">
-        <label for="inputValue">輸入數字（可用逗號分隔多值，例如：100, 200）：</label>
-        <input type="text" id="inputValue" value="100" pattern="^[0-9,\s]+$" inputmode="numeric">
-        <button id="calcBtn"></button>
-        <div class="result" id="result">→ </div>
-        <div id="processInfo"></div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; width: 100%;">
+        <label for="inputValue"></label>
+        <div style="position: relative; flex: 1; min-width: 200px;">
+          <input type="text" id="inputValue" style="width: 100%; padding-right: 4rem;">
+          <span id="clearInput" style="display: none;"></span>
+        </div>
+        <button id="calcBtn" class="subtle-btn" aria-label="Calculate"></button>
       </div>
+      <div class="result" id="result">→ </div>
+      <div id="processInfo"></div>
     </div>
   </section>
-  <!-- Common conversions section -->
   <section id="common">
     <div class="module">
       <h2></h2>
@@ -506,7 +965,7 @@
         <div class="table-box">
           <h3></h3>
           <div class="table-responsive">
-            <table id="r2cTable">
+            <table id="w2cTable">
               <thead><tr><th></th><th></th></tr></thead>
               <tbody></tbody>
             </table>
@@ -515,7 +974,7 @@
         <div class="table-box">
           <h3></h3>
           <div class="table-responsive">
-            <table id="c2rTable">
+            <table id="c2wTable">
               <thead><tr><th></th><th></th></tr></thead>
               <tbody></tbody>
             </table>
@@ -524,13 +983,12 @@
       </div>
     </div>
   </section>
-  <!-- Chart section -->
   <section id="chartSection">
     <div class="module">
       <h2></h2>
       <div style="text-align: center; margin-bottom: 1rem;">
         <label for="chartType"></label>
-        <select id="chartType" style="font-size: 1rem; padding: 0.25rem;">
+        <select id="chartType" style="font-size: 0.9rem; padding: 0.25rem;">
           <option value="line"></option>
           <option value="bar"></option>
         </select>
@@ -545,11 +1003,9 @@
       </div>
     </div>
   </section>
-  <!-- History section -->
   <section id="history">
     <div class="module">
       <h2></h2>
-      <button id="clearHistory"></button>
       <div class="table-responsive">
         <table id="historyTable">
           <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
@@ -559,17 +1015,31 @@
       <div id="historyPagination" style="text-align: center; margin-top: 1rem;"></div>
     </div>
   </section>
-  <!-- Credits -->
-  <div id="hiddenCredits"></div>
+  <div id="modalOverlay"></div>
+  <div id="rewardModal">
+    <div class="content">
+      <h3></h3>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label for="rankSelect"></label>
+        <select id="rankSelect"></select>
+      </div>
+      <div id="rewardDetails" class="reward-details"></div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <div id="notification" class="notification"></div>
   <script>
     (function(){
       "use strict";
-      // Config and LocalStorage keys
       const LS_KEYS = {
         darkMode: "converter_darkMode",
         lastInput: "converter_lastInput",
         mode: "converter_mode",
-        history: "converter_history"
+        history: "converter_history",
+        language: "converter_language",
+        theme: "converter_theme",
+        reduceMotion: "converter_reduceMotion",
+        lastRank: "converter_lastRank"
       };
       const CONFIG = {
         baseThreshold: 45,
@@ -581,371 +1051,185 @@
           {a: 1001, b: 1500, f: 4},
           {a: 1501, b: Infinity, f: 5}
         ],
-        chart: { maxRounds: 1600, step: 50 }
+        chart: { maxWaves: 1600, step: 50 }
+      };
+      const REWARDS = {
+        1: { common: 14, rare: 4, hero: 2, legendary: 0.01, gold: 320, diamonds: 3 },
+        2: { common: 20, rare: 5, hero: 2, legendary: 0.01, gold: 432, diamonds: 3 },
+        3: { common: 25, rare: 6, hero: 3, legendary: 0.01, gold: 544, diamonds: 3 },
+        4: { common: 28, rare: 8, hero: 4, legendary: 0.01, gold: 640, diamonds: 3 },
+        5: { common: 33, rare: 9, hero: 4, legendary: 0.01, gold: 736, diamonds: 3 },
+        6: { common: 37, rare: 10, hero: 5, legendary: 0.01, gold: 832, diamonds: 3 },
+        7: { common: 42, rare: 11, hero: 5, legendary: 0.01, gold: 925, diamonds: 3 },
+        8: { common: 46, rare: 12, hero: 6, legendary: 0.01, gold: 1024, diamonds: 3 },
+        9: { common: 49, rare: 14, hero: 7, legendary: 0.01, gold: 1120, diamonds: 3 },
+        10: { common: 54, rare: 15, hero: 7, legendary: 0.01, gold: 1312, diamonds: 3 },
+        11: { common: 63, rare: 17, hero: 8, legendary: 0.01, gold: 1408, diamonds: 3 },
+        12: { common: 67, rare: 18, hero: 9, legendary: 0.01, gold: 1504, diamonds: 3 },
+        13: { common: 71, rare: 19, hero: 9, legendary: 0.01, gold: 1594, diamonds: 3 },
+        14: { common: 77, rare: 20, hero: 10, legendary: 0.01, gold: 1687, diamonds: 3 },
+        15: { common: 82, rare: 21, hero: 10, legendary: 0.01, gold: 1775, diamonds: 3 },
+        16: { common: 87, rare: 22, hero: 11, legendary: 0.01, gold: 1866, diamonds: 3 },
+        17: { common: 92, rare: 23, hero: 11, legendary: 0.01, gold: 1951, diamonds: 3 },
+        18: { common: 99, rare: 24, hero: 12, legendary: 0.01, gold: 2044, diamonds: 3 },
+        19: { common: 105, rare: 25, hero: 12, legendary: 0.01, gold: 2133, diamonds: 3 },
+        20: { common: 111, rare: 26, hero: 13, legendary: 0.01, gold: 2222, diamonds: 3 }
       };
 
-      // Translation dictionary
-      let currentLang = "zh-TW";
+      let currentLang = loadLS(LS_KEYS.language, "auto");
+      let theme = loadLS(LS_KEYS.theme, "system");
+      let reduceMotion = loadLS(LS_KEYS.reduceMotion, false);
+      let lastRank = loadLS(LS_KEYS.lastRank, "20");
+      let currentCards = 0;
       const translations = {
         "zh-TW": {
-          nav: { calculator: "換算器", common: "常用換算", chartSection: "關係圖", history: "歷史記錄" },
-          calculator: {
-            title: "卡片數 / 回合數 換算器",
-            modeR2C: "回合 → 卡片",
-            modeC2R: "卡片 → 回合",
-            inputLabel: "輸入數字（可用逗號分隔多值，例如：100, 200）：",
-            calcBtn: "計算",
-            processBtn: "換算過程",
-            invalidInput: "請輸入有效且大於 0 的數值"
-          },
-          common: { title: "常用換算", r2c: "回合 → 卡片", c2r: "卡片 → 回合" },
-          chart: {
-            title: "卡數 - 回合數 關係圖",
-            chartTypeLabel: "圖表類型：",
-            optionLine: "折線圖",
-            optionBar: "柱狀圖",
-            xAxis: "回合數",
-            yAxis: "卡片數",
-            showAnnotationsLabel: "顯示標註線",
-            showPointsLabel: "顯示資料點",
-            showGridLabel: "顯示網格線",
-            roundSuffix: "回"
-          },
+          clear: "清除",
+          nav: { toggleMenu: "切換菜單", calculator: "換算器", common: "常用換算", chartSection: "關係圖", history: "歷史記錄" },
+          calculator: { title: "卡片數 / 回合數 換算器", modeW2C: "回合 → 卡片", modeC2W: "卡片 → 回合", inputLabel: "輸入數字（用逗號分隔，最多5個值）：", calcBtn: "計算", processBtn: "換算過程", invalidInput: "請輸入有效且大於 0 的數值", copyText: "複製", placeholder: "例如：100,200,300", maxValues: "最多可輸入 5 個數值" },
+          common: { title: "常用換算", w2c: "回合 → 卡片", c2w: "卡片 → 回合" },
+          chart: { title: "卡數 - 回合數 關係圖", chartTypeLabel: "圖表類型：", optionLine: "折線圖", optionBar: "柱狀圖", xAxis: "回合數", yAxis: "卡片數", showAnnotationsLabel: "顯示標註線", showPointsLabel: "顯示資料點", showGridLabel: "顯示網格線", waveSuffix: "回合" },
           history: { title: "換算歷史記錄", clearHistory: "清除歷史", noRecord: "無歷史記錄" },
-          process: {
-            r2cTitle: "【回合 → 卡片 換算過程】",
-            r2cIntro: "回合數轉換為卡片數分為兩個主要部分：前45回的基礎計算和超過45回的額外計算：",
-            r2cBaseTitle: "1. 前45回的基礎計算：",
-            r2cBaseDesc: "我們考慮輸入回合數與45的最小值，因為基礎計算僅適用於前45回。每完整的5回可獲得8張卡片，根據回合數除以5的餘數還有額外加成。",
-            r2cBaseCalc: "   - 考慮的回合數：min({input}, 45) = {r}\n   - 完整5回數：floor({r}/5) = {fullSets}\n   - 完整部分的卡片：{fullSets} * 8 = {baseCalc}\n   - 餘數：{r} % 5 = {mod}\n   - 加成卡片：{lookup}\n   - 基礎卡片合計：{baseCalc} + {lookup} = {subtotal}",
-            r2cExtraTitle: "2. 超過45回的額外卡片：",
-            r2cExtraDesc: "對於超過45回的部分，我們根據不同的回合區間和對應的倍率來計算額外卡片。",
-            r2cExtraCalc: "   - 區間 {a}～{b} (倍率 {f})：\n     - 此區間回合數：{roundsInRange}\n     - 額外卡片：{extra}",
-            r2cTotal: "3. 總卡片數：基礎 ({subtotal}) + 額外 ({extraTotal}) = {result}",
-            c2rTitle: "【卡片 → 回合 換算過程】",
-            c2rIntro: "要找到獲得至少指定卡片數所需的最小回合數，我們使用二分搜尋算法：",
-            c2rSetup: "1. 初始化搜尋範圍：低 = 1, 高 = {high}",
-            c2rIteration: "2. 迭代：中間值 = {mid}, 卡片數 = {cards}",
-            c2rResult: "3. 結果：最小回合數 = {result}"
-          },
-          tables: {
-            r2c: { header1: "回合數", header2: "卡片數" },
-            c2r: { header1: "卡片數", header2: "回合數" },
-            history: { header1: "時間", header2: "模式", header3: "輸入值", header4: "結果" }
-          },
-          units: { r2c: " 卡片", c2r: " 回合" },
+          process: { w2cTitle: "【回合 → 卡片】", w2cBase: "前45回合：每5回合得8卡，餘數加成 {lookup} 卡，總計 {subtotal} 卡。", w2cExtra: "超出45回合：範圍 {a}-{b}（倍率 {f}）：{extra} 卡。", w2cTotal: "總卡片數：{subtotal} + {extraTotal} = {result}", c2wTitle: "【卡片 → 回合】", c2wDesc: "使用二分搜尋找到最小回合數：範圍 {low}-{high}，最終 {result} 回合。" },
+          tables: { w2c: { header1: "回合數", header2: "卡片數" }, c2w: { header1: "卡片數", header2: "回合數" }, history: { header1: "時間", header2: "模式", header3: "輸入值", header4: "結果" } },
+          units: { waves: "回合", cards: "卡片" },
           pagination: { prev: "上一頁", next: "下一頁", pageInfo: "第 {current} 頁 / 共 {total} 頁" },
-          credits: "網頁、圖表製作：Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71",
-          darkMode: { light: "白天模式", dark: "黑夜模式" },
+          footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (Discord@zhili_71)",
+          darkMode: { light: "白天模式", dark: "黑夜模式", system: "系統預設" },
+          language: "語言",
           siteTitleSub: "協同模式卡片計算器",
-          easterEgg: {
-            click1: "Thinking🤔",
-            click3: "雙倍 Thinking🤔",
-            click5: "三倍 Thinking🤔！",
-            click7: "主宰一切！",
-            click10: "狂暴攻擊！！",
-            click15: "終極 Thinking🤔！！",
-            click25: "無人能擋！！",
-            click35: "變態殺戮！！",
-            click45: "猛獸級 Thinking🤔！！！",
-            click60: "超神的！！！！",
-            click80: "比神還神！！！！"
-          }
-        },
-        "en": {
-          nav: { calculator: "Converter", common: "Common Conversions", chartSection: "Chart", history: "History" },
-          calculator: {
-            title: "Cards / Rounds Converter",
-            modeR2C: "Rounds → Cards",
-            modeC2R: "Cards → Rounds",
-            inputLabel: "Enter numbers (comma-separated for multiple values, e.g., 100, 200):",
-            calcBtn: "Calculate",
-            processBtn: "Conversion Process",
-            invalidInput: "Please enter valid numbers greater than 0"
-          },
-          common: { title: "Common Conversions", r2c: "Rounds → Cards", c2r: "Cards → Rounds" },
-          chart: {
-            title: "Cards vs. Rounds Chart",
-            chartTypeLabel: "Chart Type:",
-            optionLine: "Line Chart",
-            optionBar: "Bar Chart",
-            xAxis: "Rounds",
-            yAxis: "Cards",
-            showAnnotationsLabel: "Show Annotations",
-            showPointsLabel: "Show Points",
-            showGridLabel: "Show Grid",
-            roundSuffix: " rounds"
-          },
-          history: { title: "Conversion History", clearHistory: "Clear History", noRecord: "No history records" },
-          process: {
-            r2cTitle: "Conversion Process: Rounds to Cards",
-            r2cIntro: "To convert rounds to cards, we use a two-part calculation:",
-            r2cBaseTitle: "1. Base Calculation for the First 45 Rounds:",
-            r2cBaseDesc: "We consider the minimum of the input rounds and 45, as the base calculation applies only to the first 45 rounds. For every complete set of 5 rounds, you earn 8 cards. Bonus cards are added based on the remainder when divided by 5.",
-            r2cBaseCalc: "   - Rounds considered: min({input}, 45) = {r}\n   - Full sets: floor({r}/5) = {fullSets}\n   - Cards from full sets: {fullSets} * 8 = {baseCalc}\n   - Remainder: {r} % 5 = {mod}\n   - Bonus cards: {lookup}\n   - Base total: {baseCalc} + {lookup} = {subtotal}",
-            r2cExtraTitle: "2. Additional Cards for Rounds Beyond 45:",
-            r2cExtraDesc: "For rounds exceeding 45, extra cards are calculated based on specific ranges with different multipliers.",
-            r2cExtraCalc: "   - Range {a} to {b} (multiplier {f}):\n     - Rounds in range: {roundsInRange}\n     - Extra cards: {extra}",
-            r2cTotal: "3. Total Cards: base ({subtotal}) + extra ({extraTotal}) = {result}",
-            c2rTitle: "Conversion Process: Cards to Rounds",
-            c2rIntro: "To find the minimum rounds needed for at least the specified cards, we use a binary search algorithm:",
-            c2rSetup: "1. Initialize search range: low = 1, high = {high}",
-            c2rIteration: "2. Iteration: mid = {mid}, cards = {cards}",
-            c2rResult: "3. Result: minimum rounds = {result}"
-          },
-          tables: {
-            r2c: { header1: "Rounds", header2: "Cards" },
-            c2r: { header1: "Cards", header2: "Rounds" },
-            history: { header1: "Time", header2: "Mode", header3: "Input", header4: "Result" }
-          },
-          units: { r2c: " cards", c2r: " rounds" },
-          pagination: { prev: "Previous", next: "Next", pageInfo: "Page {current} of {total}" },
-          credits: "Website & Chart by: Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71",
-          darkMode: { light: "Light Mode", dark: "Dark Mode" },
-          siteTitleSub: "Co-op Mode Card Calculator",
-          easterEgg: {
-            click1: "Thinking🤔",
-            click3: "Double Thinking🤔",
-            click5: "Triple Thinking🤔!",
-            click7: "Dominate All!",
-            click10: "Frenzied Attack!!",
-            click15: "Ultimate Thinking🤔!!",
-            click25: "Unstoppable!!",
-            click35: "Insane Slaughter!!",
-            click45: "Beast-Level Thinking🤔!!!",
-            click60: "Super Divine!!!!",
-            click80: "Beyond God!!!!"
-          }
+          backToTop: "回到頂部",
+          easterEgg: { click1: "Thinking🤔", click3: "雙倍 Thinking🤔", click5: "三倍 Thinking🤔！", click7: "主宰一切！", click10: "狂暴攻擊！！", click15: "終極 Thinking🤔！！", click25: "無人能擋！！", click35: "變態殺戮！！", click45: "猛獸級 Thinking🤔！！！", click60: "超神的！！！！", click80: "比神還神！！！！" },
+          copied: "已複製",
+          settings: { title: "設置", language: "語言", theme: "主題", reduceMotion: "減少動畫", clearHistory: "清除歷史記錄" },
+          autoSelectLanguage: "自動選擇語言",
+          reward: { title: "獎勵計算", selectRank: "選擇遊戲內段位", boxes: "箱子", commonDice: "普通骰子", rareDice: "稀有骰子", heroDice: "英雄骰子", legendaryDice: "傳說骰子", gold: "金幣", diamonds: "鑽石", expected: "（預期）" }
         },
         "zh-CN": {
-          nav: { calculator: "换算器", common: "常用换算", chartSection: "关系图", history: "历史记录" },
-          calculator: {
-            title: "卡片数 / 回合数 换算器",
-            modeR2C: "回合 → 卡片",
-            modeC2R: "卡片 → 回合",
-            inputLabel: "输入数字（可用逗号分隔多值，例如：100, 200）：",
-            calcBtn: "计算",
-            processBtn: "换算过程",
-            invalidInput: "请输入有效且大于 0 的数值"
-          },
-          common: { title: "常用换算", r2c: "回合 → 卡片", c2r: "卡片 → 回合" },
-          chart: {
-            title: "卡数 - 回合数 关系图",
-            chartTypeLabel: "图表类型：",
-            optionLine: "折线图",
-            optionBar: "柱状图",
-            xAxis: "回合数",
-            yAxis: "卡片数",
-            showAnnotationsLabel: "显示标注线",
-            showPointsLabel: "显示数据点",
-            showGridLabel: "显示网格线",
-            roundSuffix: "回"
-          },
-          history: { title: "换算历史记录", clearHistory: "清除历史", noRecord: "无历史记录" },
-          process: {
-            r2cTitle: "【回合 → 卡片 换算过程】",
-            r2cIntro: "回合数转换为卡片数分为两个主要部分：前45回的基础计算和超过45回的额外计算：",
-            r2cBaseTitle: "1. 前45回的基础计算：",
-            r2cBaseDesc: "我们考虑输入回合数与45的最小值，因为基础计算仅适用于前45回。每完整的5回可获得8张卡片，根據回合数除以5的余数还有额外加成。",
-            r2cBaseCalc: "   - 考虑的回合数：min({input}, 45) = {r}\n   - 完整5回数：floor({r}/5) = {fullSets}\n   - 完整部分的卡片：{fullSets} * 8 = {baseCalc}\n   - 余数：{r} % 5 = {mod}\n   - 加成卡片：{lookup}\n   - 基础卡片合计：{baseCalc} + {lookup} = {subtotal}",
-            r2cExtraTitle: "2. 超过45回的额外卡片：",
-            r2cExtraDesc: "对于超过45回的部分，我们根据不同的回合区间和对应的倍率来计算额外卡片。",
-            r2cExtraCalc: "   - 区间 {a}～{b} (倍率 {f})：\n     - 此区间回合数：{roundsInRange}\n     - 额外卡片：{extra}",
-            r2cTotal: "3. 总卡片数：基础 ({subtotal}) + 额外 ({extraTotal}) = {result}",
-            c2rTitle: "【卡片 → 回合 换算过程】",
-            c2rIntro: "要找到获得至少指定卡片数所需的最小回合数，我们使用二分搜索算法：",
-            c2rSetup: "1. 初始化搜索范围：低 = 1, 高 = {high}",
-            c2rIteration: "2. 迭代：中间值 = {mid}, 卡片数 = {cards}",
-            c2rResult: "3. 结果：最小回合数 = {result}"
-          },
-          tables: {
-            r2c: { header1: "回合数", header2: "卡片数" },
-            c2r: { header1: "卡片数", header2: "回合数" },
-            history: { header1: "时间", header2: "模式", header3: "输入值", header4: "结果" }
-          },
-          units: { r2c: " 卡片", c2r: " 回合" },
+          clear: "清除",
+          nav: { toggleMenu: "切换菜单", calculator: "转换器", common: "常用转换", chartSection: "关系图", history: "历史记录" },
+          calculator: { title: "卡片数 / 回合数 转换器", modeW2C: "回合 → 卡片", modeC2W: "卡片 → 回合", inputLabel: "输入数字（用逗号分隔，最多5个值）：", calcBtn: "计算", processBtn: "转换过程", invalidInput: "请输入有效且大于 0 的数值", copyText: "复制", placeholder: "例如：100,200,300", maxValues: "最多可输入 5 个数值" },
+          common: { title: "常用转换", w2c: "回合 → 卡片", c2w: "卡片 → 回合" },
+          chart: { title: "卡数 - 回合数 关系图", chartTypeLabel: "图表类型：", optionLine: "折线图", optionBar: "柱状图", xAxis: "回合数", yAxis: "卡片数", showAnnotationsLabel: "显示标注线", showPointsLabel: "显示数据点", showGridLabel: "显示网格线", waveSuffix: "回合" },
+          history: { title: "转换历史记录", clearHistory: "清除历史", noRecord: "无历史记录" },
+          process: { w2cTitle: "【回合 → 卡片】", w2cBase: "前45回合：每5回合得8卡，余数加成 {lookup} 卡，总计 {subtotal} 卡。", w2cExtra: "超出45回合：范围 {a}-{b}（倍率 {f}）：{extra} 卡。", w2cTotal: "总卡片数：{subtotal} + {extraTotal} = {result}", c2wTitle: "【卡片 → 回合】", c2wDesc: "使用二分搜索找到最小回合数：范围 {low}-{high}，最终 {result} 回合。" },
+          tables: { w2c: { header1: "回合数", header2: "卡片数" }, c2w: { header1: "卡片数", header2: "回合数" }, history: { header1: "时间", header2: "模式", header3: "输入值", header4: "结果" } },
+          units: { waves: "回合", cards: "卡片" },
           pagination: { prev: "上一页", next: "下一页", pageInfo: "第 {current} 页 / 共 {total} 页" },
-          credits: "网页、图表制作：Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71",
-          darkMode: { light: "白天模式", dark: "黑夜模式" },
+          footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (Discord@zhili_71)",
+          darkMode: { light: "白天模式", dark: "黑夜模式", system: "系统默认" },
+          language: "语言",
           siteTitleSub: "协同模式卡片计算器",
-          easterEgg: {
-            click1: "Thinking🤔",
-            click3: "双倍 Thinking🤔",
-            click5: "三倍 Thinking🤔！",
-            click7: "主宰一切！",
-            click10: "狂暴攻击！！",
-            click15: "终极 Thinking🤔！！",
-            click25: "无人能挡！！",
-            click35: "变态杀戮！！",
-            click45: "猛兽级 Thinking🤔！！！",
-            click60: "超神的！！！！",
-            click80: "比神还神！！！！"
-          }
+          backToTop: "回到顶部",
+          easterEgg: { click1: "Thinking🤔", click3: "双倍 Thinking🤔", click5: "三倍 Thinking🤔！", click7: "主宰一切！", click10: "狂暴攻击！！", click15: "终极 Thinking🤔！！", click25: "无人能挡！！", click35: "变态杀戮！！", click45: "猛兽级 Thinking🤔！！！", click60: "超神的！！！！", click80: "比神还神！！！！" },
+          copied: "已复制",
+          settings: { title: "设置", language: "语言", theme: "主题", reduceMotion: "减少动画", clearHistory: "清除历史记录" },
+          autoSelectLanguage: "自动选择语言",
+          reward: { title: "奖励计算", selectRank: "选择游戏内段位", boxes: "箱子", commonDice: "普通骰子", rareDice: "稀有骰子", heroDice: "英雄骰子", legendaryDice: "传说骰子", gold: "金币", diamonds: "钻石", expected: "（预期）" }
+        },
+        "en": {
+          clear: "Clear",
+          nav: { toggleMenu: "Toggle Menu", calculator: "Converter", common: "Common Conversions", chartSection: "Chart", history: "History" },
+          calculator: { title: "Cards / Waves Converter", modeW2C: "Wave → Cards", modeC2W: "Cards → Wave", inputLabel: "Enter numbers (comma-separated, up to 5 values):", calcBtn: "Calculate", processBtn: "Conversion Process", invalidInput: "Please enter valid numbers > 0", copyText: "Copy", placeholder: "e.g., 100,200,300", maxValues: "Maximum of 5 values allowed" },
+          common: { title: "Common Conversions", w2c: "Wave → Cards", c2w: "Cards → Wave" },
+          chart: { title: "Cards vs. Waves Chart", chartTypeLabel: "Chart Type:", optionLine: "Line Chart", optionBar: "Bar Chart", xAxis: "Wave", yAxis: "Cards", showAnnotationsLabel: "Show Annotations", showPointsLabel: "Show Points", showGridLabel: "Show Grid", waveSuffix: " waves" },
+          history: { title: "Conversion History", clearHistory: "Clear History", noRecord: "No history records" },
+          process: { w2cTitle: "【Wave → Cards】", w2cBase: "First 45 waves: 8 cards per 5 waves, bonus {lookup} cards, total {subtotal} cards.", w2cExtra: "Beyond 45 waves: Range {a}-{b} (multiplier {f}): {extra} cards.", w2cTotal: "Total cards: {subtotal} + {extraTotal} = {result}", c2wTitle: "【Cards → Wave】", c2wDesc: "Binary search for minimum waves: Range {low}-{high}, final {result} waves." },
+          tables: { w2c: { header1: "Wave", header2: "Cards" }, c2w: { header1: "Cards", header2: "Wave" }, history: { header1: "Time", header2: "Mode", header3: "Input", header4: "Result" } },
+          units: { waves: "waves", cards: "cards" },
+          pagination: { prev: "Previous", next: "Next", pageInfo: "Page {current} of {total}" },
+          footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (@zhili_71 on Discord)",
+          darkMode: { light: "Light Mode", dark: "Dark Mode", system: "System Default" },
+          language: "Language",
+          siteTitleSub: "Co-op Mode Card Calculator",
+          backToTop: "Back to Top",
+          easterEgg: { click1: "Thinking🤔", click3: "Double Thinking🤔", click5: "Triple Thinking🤔!", click7: "Dominate All!", click10: "Frenzied Attack!!", click15: "Ultimate Thinking🤔!!", click25: "Unstoppable!!", click35: "Insane Slaughter!!", click45: "Beast-Level Thinking🤔!!!", click60: "Super Divine!!!!", click80: "Beyond God!!!!" },
+          copied: "Copied",
+          settings: { title: "Settings", language: "Language", theme: "Theme", reduceMotion: "Reduce Motion", clearHistory: "Clear History" },
+          autoSelectLanguage: "Auto-select language",
+          reward: { title: "Reward Calculation", selectRank: "Select Rank", boxes: "Boxes", commonDice: "Common Dice", rareDice: "Rare Dice", heroDice: "Hero Dice", legendaryDice: "Legendary Dice", gold: "Gold", diamonds: "Diamonds", expected: "(expected)" }
         },
         "ja": {
-          nav: { calculator: "変換器", common: "一般的な変換", chartSection: "チャート", history: "履歴" },
-          calculator: {
-            title: "カード数 / ラウンド数 変換器",
-            modeR2C: "ラウンド → カード",
-            modeC2R: "カード → ラウンド",
-            inputLabel: "数字を入力してください（複数の値をカンマで区切ってください、例：100, 200）：",
-            calcBtn: "計算",
-            processBtn: "変換プロセス",
-            invalidInput: "0より大きい有効な数値を入力してください"
-          },
-          common: { title: "一般的な変換", r2c: "ラウンド → カード", c2r: "カード → ラウンド" },
-          chart: {
-            title: "カード数 - ラウンド数 チャート",
-            chartTypeLabel: "チャートタイプ：",
-            optionLine: "折れ線グラフ",
-            optionBar: "棒グラフ",
-            xAxis: "ラウンド数",
-            yAxis: "カード数",
-            showAnnotationsLabel: "注釈を表示",
-            showPointsLabel: "データポイントを表示",
-            showGridLabel: "グリッド線を表示",
-            roundSuffix: "ラウンド"
-          },
-          history: { title: "変換履歴", clearHistory: "履歴をクリア", noRecord: "履歴記録なし" },
-          process: {
-            r2cTitle: "【ラウンド → カード 変換プロセス】",
-            r2cIntro: "ラウンドからカードへの変換は2つの主要な部分に分かれます：最初の45ラウンドの基本計算と45ラウンドを超える追加計算です。",
-            r2cBaseTitle: "1. 最初の45ラウンドの基本計算：",
-            r2cBaseDesc: "入力ラウンドと45の最小値を考慮します。5ラウンドごとに8枚のカードを獲得し、5で割った余りに基づいてボーナスカードが追加されます。",
-            r2cBaseCalc: "   - 考慮されるラウンド：min({input}, 45) = {r}\n   - 完全な5ラウンドセット：floor({r}/5) = {fullSets}\n   - セットからのカード：{fullSets} * 8 = {baseCalc}\n   - 余り：{r} % 5 = {mod}\n   - ボーナスカード：{lookup}\n   - 基本合計：{baseCalc} + {lookup} = {subtotal}",
-            r2cExtraTitle: "2. 45ラウンドを超える追加カード：",
-            r2cExtraDesc: "45ラウンドを超える部分については、特定の範囲と乗数に基づいて追加カードを計算します。",
-            r2cExtraCalc: "   - 範囲 {a}～{b} (乗数 {f})：\n     - この範囲のラウンド数：{roundsInRange}\n     - 追加カード：{extra}",
-            r2cTotal: "3. 総カード数：基本 ({subtotal}) + 追加 ({extraTotal}) = {result}",
-            c2rTitle: "【カード → ラウンド 変換プロセス】",
-            c2rIntro: "指定されたカード数以上を獲得するために必要な最小ラウンド数を見つけるために、バイナリサーチアルゴリズムを使用します：",
-            c2rSetup: "1. 検索範囲を初期化：低 = 1, 高 = {high}",
-            c2rIteration: "2. 反復：中間値 = {mid}, カード数 = {cards}",
-            c2rResult: "3. 結果：最小ラウンド数 = {result}"
-          },
-          tables: {
-            r2c: { header1: "ラウンド数", header2: "カード数" },
-            c2r: { header1: "カード数", header2: "ラウンド数" },
-            history: { header1: "時間", header2: "モード", header3: "入力値", header4: "結果" }
-          },
-          units: { r2c: " カード", c2r: " ラウンド" },
-          pagination: { prev: "前へ", next: "次へ", pageInfo: "ページ {current} / {total}" },
-          credits: "ウェブサイト＆チャート：Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71",
-          darkMode: { light: "ライトモード", dark: "ダークモード" },
+          clear: "クリア",
+          nav: { toggleMenu: "メニューを切り替え", calculator: "コンバーター", common: "一般的な変換", chartSection: "チャート", history: "履歴" },
+          calculator: { title: "カード数 / ウェーブ数 コンバーター", modeW2C: "ウェーブ → カード", modeC2W: "カード → ウェーブ", inputLabel: "数字を入力（カンマで区切り、最大5値）：", calcBtn: "計算", processBtn: "変換プロセス", invalidInput: "有効で0より大きい数値を入力してください", copyText: "コピー", placeholder: "例：100,200,300", maxValues: "最大5つの値を入力できます" },
+          common: { title: "一般的な変換", w2c: "ウェーブ → カード", c2w: "カード → ウェーブ" },
+          chart: { title: "カード数 - ウェーブ数 チャート", chartTypeLabel: "チャートタイプ：", optionLine: "折れ線グラフ", optionBar: "棒グラフ", xAxis: "ウェーブ数", yAxis: "カード数", showAnnotationsLabel: "注釈を表示", showPointsLabel: "データポイントを表示", showGridLabel: "グリッド線を表示", waveSuffix: "ウェーブ" },
+          history: { title: "変換履歴", clearHistory: "履歴をクリア", noRecord: "履歴がありません" },
+          process: { w2cTitle: "【ウェーブ → カード】", w2cBase: "最初の45ウェーブ：5ウェーブごとに8カード、ボーナス {lookup} カード、合計 {subtotal} カード。", w2cExtra: "45ウェーブ超え：範囲 {a}-{b}（倍率 {f}）：{extra} カード。", w2cTotal: "総カード数：{subtotal} + {extraTotal} = {result}", c2wTitle: "【カード → ウェーブ】", c2wDesc: "二分探索で最小ウェーブ数を検索：範囲 {low}-{high}、最終 {result} ウェーブ。" },
+          tables: { w2c: { header1: "ウェーブ数", header2: "カード数" }, c2w: { header1: "カード数", header2: "ウェーブ数" }, history: { header1: "時間", header2: "モード", header3: "入力値", header4: "結果" } },
+          units: { waves: "ウェーブ", cards: "カード" },
+          pagination: { prev: "前へ", next: "次へ", pageInfo: "{total}ページ中 {current}ページ" },
+          footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (Discord@zhili_71)",
+          darkMode: { light: "ライトモード", dark: "ダークモード", system: "システムデフォルト" },
+          language: "言語",
           siteTitleSub: "協力モードカード計算機",
-          easterEgg: {
-            click1: "Thinking🤔",
-            click3: "ダブル Thinking🤔",
-            click5: "トリプル Thinking🤔！",
-            click7: "全てを支配！",
-            click10: "狂乱の攻撃！！",
-            click15: "究極の Thinking🤔！！",
-            click25: "無敵！！",
-            click35: "狂気の殺戮！！",
-            click45: "獣級 Thinking🤔！！！",
-            click60: "超神！！！！",
-            click80: "神を超える！！！！"
-          }
+          backToTop: "トップに戻る",
+          easterEgg: { click1: "Thinking🤔", click3: "ダブル Thinking🤔", click5: "トリプル Thinking🤔！", click7: "全てを支配！", click10: "狂乱攻撃！！", click15: "究極 Thinking🤔！！", click25: "止められない！！", click35: "異常殺戮！！", click45: "獣級 Thinking🤔！！！", click60: "超神の！！！！", click80: "神を超える！！！！" },
+          copied: "コピーしました",
+          settings: { title: "設定", language: "言語", theme: "テーマ", reduceMotion: "モーションを減らす", clearHistory: "履歴をクリア" },
+          autoSelectLanguage: "言語を自動選択",
+          reward: { title: "報酬計算", selectRank: "ランクを選択", boxes: "ボックス", commonDice: "一般ダイス", rareDice: "レアダイス", heroDice: "ヒーローダイス", legendaryDice: "レジェンダリーダイス", gold: "ゴールド", diamonds: "ダイヤモンド", expected: "（期待値）" }
         },
         "ko": {
-          nav: { calculator: "변환기", common: "일반 변환", chartSection: "차트", history: "기록" },
-          calculator: {
-            title: "카드 수 / 라운드 수 변환기",
-            modeR2C: "라운드 → 카드",
-            modeC2R: "카드 → 라운드",
-            inputLabel: "숫자를 입력하세요 (여러 값을 쉼표로 구분, 예: 100, 200):",
-            calcBtn: "계산",
-            processBtn: "변환 과정",
-            invalidInput: "0보다 큰 유효한 숫자를 입력하세요"
-          },
-          common: { title: "일반 변환", r2c: "라운드 → 카드", c2r: "카드 → 라운드" },
-          chart: {
-            title: "카드 수 - 라운드 수 차트",
-            chartTypeLabel: "차트 유형:",
-            optionLine: "선 그래프",
-            optionBar: "막대 그래프",
-            xAxis: "라운드 수",
-            yAxis: "카드 수",
-            showAnnotationsLabel: "주석 표시",
-            showPointsLabel: "데이터 포인트 표시",
-            showGridLabel: "그리드 라인 표시",
-            roundSuffix: "라운드"
-          },
+          clear: "지우기",
+          nav: { toggleMenu: "메뉴 전환", calculator: "변환기", common: "일반 변환", chartSection: "차트", history: "기록" },
+          calculator: { title: "카드 수 / 웨이브 수 변환기", modeW2C: "웨이브 → 카드", modeC2W: "카드 → 웨이브", inputLabel: "숫자 입력 (쉼표로 구분, 최대 5개 값):", calcBtn: "계산", processBtn: "변환 과정", invalidInput: "0보다 큰 유효한 숫자를 입력하세요", copyText: "복사", placeholder: "예: 100,200,300", maxValues: "최대 5개의 값을 입력할 수 있습니다" },
+          common: { title: "일반 변환", w2c: "웨이브 → 카드", c2w: "카드 → 웨이브" },
+          chart: { title: "카드 수 - 웨이브 수 차트", chartTypeLabel: "차트 유형:", optionLine: "선 차트", optionBar: "막대 차트", xAxis: "웨이브 수", yAxis: "카드 수", showAnnotationsLabel: "주석 표시", showPointsLabel: "데이터 포인트 표시", showGridLabel: "격자선 표시", waveSuffix: "웨이브" },
           history: { title: "변환 기록", clearHistory: "기록 지우기", noRecord: "기록 없음" },
-          process: {
-            r2cTitle: "【라운드 → 카드 변환 과정】",
-            r2cIntro: "라운드에서 카드로의 변환은 두 가지 주요 부분으로 나뉩니다: 처음 45라운드의 기본 계산과 45라운드를 초과하는 추가 계산입니다.",
-            r2cBaseTitle: "1. 처음 45라운드의 기본 계산:",
-            r2cBaseDesc: "입력 라운드와 45 중 더 작은 값을 고려합니다. 5라운드마다 8장의 카드를 얻으며, 5로 나눈 나머지에 따라 보너스 카드가 추가됩니다.",
-            r2cBaseCalc: "   - 고려된 라운드: min({input}, 45) = {r}\n   - 완전한 5라운드 세트: floor({r}/5) = {fullSets}\n   - 세트에서 얻은 카드: {fullSets} * 8 = {baseCalc}\n   - 나머지: {r} % 5 = {mod}\n   - 보너스 카드: {lookup}\n   - 기본 합계: {baseCalc} + {lookup} = {subtotal}",
-            r2cExtraTitle: "2. 45라운드를 초과하는 추가 카드:",
-            r2cExtraDesc: "45라운드를 초과하는 부분은 특정 범위와 배율에 따라 추가 카드를 계산합니다.",
-            r2cExtraCalc: "   - 범위 {a}～{b} (배율 {f}): \n     - 이 범위의 라운드 수: {roundsInRange}\n     - 추가 카드: {extra}",
-            r2cTotal: "3. 총 카드 수: 기본 ({subtotal}) + 추가 ({extraTotal}) = {result}",
-            c2rTitle: "【카드 → 라운드 변환 과정】",
-            c2rIntro: "지정된 카드 수 이상을 얻기 위해 필요한 최소 라운드 수를 찾기 위해 이진 탐색 알고리즘을 사용합니다:",
-            c2rSetup: "1. 검색 범위 초기화: 저 = 1, 고 = {high}",
-            c2rIteration: "2. 반복: 중간값 = {mid}, 카드 수 = {cards}",
-            c2rResult: "3. 결과: 최소 라운드 수 = {result}"
-          },
-          tables: {
-            r2c: { header1: "라운드 수", header2: "카드 수" },
-            c2r: { header1: "카드 수", header2: "라운드 수" },
-            history: { header1: "시간", header2: "모드", header3: "입력값", header4: "결과" }
-          },
-          units: { r2c: " 카드", c2r: " 라운드" },
-          pagination: { prev: "이전", next: "다음", pageInfo: "페이지 {current} / {total}" },
-          credits: "웹사이트 & 차트: Discord 𝕫𝕙𝕚𝕝𝕚 @zhili_71",
-          darkMode: { light: "라이트 모드", dark: "다크 모드" },
+          process: { w2cTitle: "【웨이브 → 카드】", w2cBase: "처음 45웨이브: 5웨이브마다 8카드, 보너스 {lookup} 카드, 총 {subtotal} 카드。", w2cExtra: "45웨이브 초과: 범위 {a}-{b} (배율 {f}): {extra} 카드。", w2cTotal: "총 카드 수: {subtotal} + {extraTotal} = {result}", c2wTitle: "【카드 → 웨이브】", c2wDesc: "이분 탐색으로 최소 웨이브 수 찾기: 범위 {low}-{high}, 최종 {result} 웨이브。" },
+          tables: { w2c: { header1: "웨이브 수", header2: "카드 수" }, c2w: { header1: "카드 수", header2: "웨이브 수" }, history: { header1: "시간", header2: "모드", header3: "입력값", header4: "결과" } },
+          units: { waves: "웨이브", cards: "카드" },
+          pagination: { prev: "이전", next: "다음", pageInfo: "{total} 중 {current} 페이지" },
+          footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (Discord@zhili_71)",
+          darkMode: { light: "라이트 모드", dark: "다크 모드", system: "시스템 기본" },
+          language: "언어",
           siteTitleSub: "협동 모드 카드 계산기",
-          easterEgg: {
-            click1: "Thinking🤔",
-            click3: "더블 Thinking🤔",
-            click5: "트리플 Thinking🤔!",
-            click7: "모두 지배!",
-            click10: "광란의 공격!!",
-            click15: "궁극의 Thinking🤔!!",
-            click25: "무적!!",
-            click35: "광기의 살육!!",
-            click45: "야수급 Thinking🤔!!!",
-            click60: "초신!!!!",
-            click80: "신을 초월!!!!"
-          }
+          backToTop: "맨 위로",
+          easterEgg: { click1: "Thinking🤔", click3: "더블 Thinking🤔", click5: "트리플 Thinking🤔!", click7: "모두 지배!", click10: "광란 공격!!", click15: "궁극 Thinking🤔!!", click25: "막을 수 없음!!", click35: "변태 살육!!", click45: "야수급 Thinking🤔!!!", click60: "초신의!!!!", click80: "신을 초월!!!!" },
+          copied: "복사됨",
+          settings: { title: "설정", language: "언어", theme: "테마", reduceMotion: "모션 줄이기", clearHistory: "기록 지우기" },
+          autoSelectLanguage: "언어 자동 선택",
+          reward: { title: "보상 계산", selectRank: "랭크 선택", boxes: "상자", commonDice: "일반 주사위", rareDice: "레어 주사위", heroDice: "히어로 주사위", legendaryDice: "레전더리 주사위", gold: "골드", diamonds: "다이아몬드", expected: "(예상)" }
         }
       };
+      let t = translations["zh-TW"];
 
-      // DOM elements
       const body = document.body;
-      const inputValueElem = document.getElementById("inputValue");
+      const sideMenu = document.getElementById("sideMenu");
+      const inputValue = document.getElementById("inputValue");
+      const clearInput = document.getElementById("clearInput");
       const resultDiv = document.getElementById("result");
       const processInfo = document.getElementById("processInfo");
-      const btnR2C = document.getElementById("btnR2C");
-      const btnC2R = document.getElementById("btnC2R");
+      const btnW2C = document.getElementById("btnW2C");
+      const btnC2W = document.getElementById("btnC2W");
       const calcBtn = document.getElementById("calcBtn");
       const processBtn = document.getElementById("processBtn");
       const chartTypeSelect = document.getElementById("chartType");
       const toggleAnnotationsCheckbox = document.getElementById("toggleAnnotations");
       const togglePointsCheckbox = document.getElementById("togglePoints");
       const toggleGridCheckbox = document.getElementById("toggleGrid");
-      const r2cTableBody = document.getElementById("r2cTable").querySelector("tbody");
-      const c2rTableBody = document.getElementById("c2rTable").querySelector("tbody");
+      const w2cTableBody = document.getElementById("w2cTable").querySelector("tbody");
+      const c2wTableBody = document.getElementById("c2wTable").querySelector("tbody");
       const historyTableBody = document.getElementById("historyTable").querySelector("tbody");
-      const clearHistoryBtn = document.getElementById("clearHistory");
-      const navTopBtn = document.getElementById("navTop");
-      const navPrevBtn = document.getElementById("navPrev");
-      const navNextBtn = document.getElementById("navNext");
       const historyPagination = document.getElementById("historyPagination");
-      const darkModeToggle = document.getElementById("darkModeToggle");
-      const darkModeIcon = document.getElementById("darkModeIcon");
-      const darkModeText = document.getElementById("darkModeText");
       const langSelect = document.getElementById("langSelect");
+      const themeSelect = document.getElementById("themeSelect");
+      const reduceMotionCheckbox = document.getElementById("reduceMotion");
+      const clearHistoryBtn = document.getElementById("clearHistory");
+      const settingsToggle = document.getElementById("settingsToggle");
+      const settingsPopup = document.getElementById("settingsPopup");
       const sideMenuToggle = document.getElementById("sideMenuToggle");
       const siteTitleContainer = document.getElementById("siteTitleContainer");
       const siteTitleSub = document.getElementById("siteTitleSub");
       const easterEggText = document.getElementById("easterEggText");
+      const footer = document.getElementById("footer");
+      const notification = document.getElementById("notification");
+      const rewardModal = document.getElementById("rewardModal");
+      const modalOverlay = document.getElementById("modalOverlay");
       let myChart = null;
       let currentChartType = chartTypeSelect.value;
-      let mode = "r2c";
+      let mode = "w2c";
       let historyData = [];
       let currentHistoryPage = 0;
       const recordsPerPage = 5;
@@ -955,68 +1239,138 @@
       let eggClickCount = 0;
       let eggTimeout = null;
 
-      // Restrict input to numbers and commas
-      inputValueElem.addEventListener("input", function(){ this.value = this.value.replace(/[^0-9,]/g, ""); });
-
-      // LocalStorage functions
       function saveLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
       function loadLS(key, defaultValue) {
         const val = localStorage.getItem(key);
         return val ? JSON.parse(val) : defaultValue;
       }
 
-      // Initialize preferences
       function initPreferences(){
-        const darkPref = loadLS(LS_KEYS.darkMode, null);
-        if(darkPref !== null) body.classList.toggle("dark", darkPref);
-        else if(window.matchMedia('(prefers-color-scheme: dark)').matches) body.classList.add("dark");
-        renderToggleBtn();
-        inputValueElem.value = loadLS(LS_KEYS.lastInput, "100");
-        mode = loadLS(LS_KEYS.mode, "r2c");
-        btnR2C.classList.toggle("active", mode === "r2c");
-        btnC2R.classList.toggle("active", mode === "c2r");
+        currentLang = loadLS(LS_KEYS.language, "auto");
+        if(currentLang === "auto"){
+          const browserLang = navigator.language.toLowerCase();
+          if(browserLang.startsWith("zh-")){
+            currentLang = browserLang === "zh-cn" ? "zh-CN" : "zh-TW";
+          } else if(browserLang.startsWith("ja")){
+            currentLang = "ja";
+          } else if(browserLang.startsWith("ko")){
+            currentLang = "ko";
+          } else {
+            currentLang = "en";
+          }
+        }
+        langSelect.value = currentLang;
+
+        if(theme === "system"){
+          body.classList.toggle("dark", window.matchMedia('(prefers-color-scheme: dark)').matches);
+        } else {
+          body.classList.toggle("dark", theme === "dark");
+        }
+        themeSelect.value = theme;
+
+        reduceMotion = loadLS(LS_KEYS.reduceMotion, false);
+        reduceMotionCheckbox.checked = reduceMotion;
+        if(reduceMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          document.body.classList.add("reduce-motion");
+        }
+
+        mode = loadLS(LS_KEYS.mode, "w2c");
+        btnW2C.classList.toggle("active", mode === "w2c");
+        btnC2W.classList.toggle("active", mode === "c2w");
         historyData = loadLS(LS_KEYS.history, []);
         renderHistory();
         updateLanguage();
+        lastRank = loadLS(LS_KEYS.lastRank, "20");
       }
 
-      // Side menu toggle
       sideMenuToggle.addEventListener("click", function(){
         sideMenu.classList.toggle("collapsed");
-        sideMenuToggle.style.left = sideMenu.classList.contains("collapsed") ? "0px" : "250px";
+        const isOpen = !sideMenu.classList.contains("collapsed");
+        sideMenuToggle.classList.toggle("moved", isOpen);
+        sideMenuToggle.innerHTML = isOpen ? "✖" : "☰";
+        document.getElementById("dotNav").style.display = isOpen ? "none" : "flex";
       });
 
-      // Dark mode toggle
-      function renderToggleBtn(){
-        darkModeIcon.innerHTML = body.classList.contains("dark") ? getSunSVG() : getMoonSVG();
-        darkModeText.textContent = translations[currentLang].darkMode[body.classList.contains("dark") ? "light" : "dark"];
+      settingsToggle.addEventListener("click", function(){
+        settingsPopup.classList.toggle("visible");
+        settingsToggle.classList.toggle("rotate");
+      });
+
+      document.addEventListener("click", function(event){
+        const isOpen = !sideMenu.classList.contains("collapsed");
+        if(!sideMenu.contains(event.target) && event.target !== sideMenuToggle && isOpen){
+          sideMenuToggle.click();
+        }
+        if(!settingsPopup.contains(event.target) && event.target !== settingsToggle && settingsPopup.classList.contains("visible")){
+          settingsPopup.classList.remove("visible");
+          settingsToggle.classList.remove("rotate");
+        }
+        if(event.target.classList.contains("reward-symbol") || event.target.closest(".card-container")){
+          const container = event.target.classList.contains("card-container") ? event.target : event.target.closest(".card-container");
+          const cards = container.getAttribute("data-cards");
+          showModal(cards);
+        }
+      });
+
+      document.querySelectorAll(".dot").forEach(dot => {
+        dot.addEventListener("click", function(){
+          const sectionId = this.getAttribute("data-section");
+          document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      function setTheme(mode){
+        theme = mode;
+        saveLS(LS_KEYS.theme, mode);
+        if(mode === "system"){
+          body.classList.toggle("dark", window.matchMedia('(prefers-color-scheme: dark)').matches);
+        } else {
+          body.classList.toggle("dark", mode === "dark");
+        }
         updateChartAxisColor();
       }
-      function getSunSVG(){
-        return `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
-          <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2"/>
-          <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2"/>
-          <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
-        </svg>`;
-      }
-      function getMoonSVG(){
-        return `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M9.37 5.51A7 7 0 0 0 12 19a7 7 0 0 0 6.49-9.64A9 9 0 1 1 9.37 5.51z"/>
-        </svg>`;
-      }
-      darkModeToggle.addEventListener("click", function(){
-        body.classList.toggle("dark");
-        renderToggleBtn();
-        saveLS(LS_KEYS.darkMode, body.classList.contains("dark"));
+
+      themeSelect.addEventListener("change", function(){
+        setTheme(this.value);
       });
 
-      // Desktop scroll handling
+      langSelect.addEventListener("change", function(){
+        currentLang = this.value;
+        if(currentLang === "auto"){
+          const browserLang = navigator.language.toLowerCase();
+          if(browserLang.startsWith("zh-")){
+            currentLang = browserLang === "zh-cn" ? "zh-CN" : "zh-TW";
+          } else if(browserLang.startsWith("ja")){
+            currentLang = "ja";
+          } else if(browserLang.startsWith("ko")){
+            currentLang = "ko";
+          } else {
+            currentLang = "en";
+          }
+        }
+        saveLS(LS_KEYS.language, this.value);
+        updateLanguage();
+      });
+
+      reduceMotionCheckbox.addEventListener("change", function(){
+        reduceMotion = this.checked;
+        saveLS(LS_KEYS.reduceMotion, reduceMotion);
+        if(reduceMotion){
+          document.body.classList.add("reduce-motion");
+        } else {
+          document.body.classList.remove("reduce-motion");
+        }
+      });
+
+      clearHistoryBtn.addEventListener("click", function(){
+        if(confirm("Are you sure you want to clear all history records?")){
+          historyData = [];
+          saveLS(LS_KEYS.history, historyData);
+          currentHistoryPage = 0;
+          renderHistory();
+        }
+      });
+
       if(window.innerWidth > 768) {
         window.addEventListener("wheel", function(e) {
           e.preventDefault();
@@ -1042,38 +1396,9 @@
         }, {passive: false});
       }
 
-      // Page navigation
-      window.addEventListener("scroll", function(){
-        document.getElementById("hiddenCredits").classList.toggle("visible", window.innerHeight + window.scrollY >= document.body.offsetHeight - 150);
-        updateSideMenuHighlight();
-      });
-      navTopBtn.addEventListener("click", function(){ window.scrollTo({ top: 0, behavior: "smooth" }); });
-      navPrevBtn.addEventListener("click", function(){
-        const sections = Array.from(document.querySelectorAll("section"));
-        const currentScroll = window.scrollY;
-        let target = null;
-        for(let i = sections.length - 1; i >= 0; i--){
-          if(sections[i].offsetTop < currentScroll - 50){
-            target = sections[i];
-            break;
-          }
-        }
-        if(target) target.scrollIntoView({ behavior: "smooth" });
-      });
-      navNextBtn.addEventListener("click", function(){
-        const sections = Array.from(document.querySelectorAll("section"));
-        const currentScroll = window.scrollY;
-        let target = null;
-        for(let i = 0; i < sections.length; i++){
-          if(sections[i].offsetTop > currentScroll + 50){
-            target = sections[i];
-            break;
-          }
-        }
-        if(target) target.scrollIntoView({ behavior: "smooth" });
-      });
+      window.addEventListener("scroll", updateSideMenuHighlight);
+      document.getElementById("navTop").addEventListener("click", function(){ window.scrollTo({ top: 0, behavior: "smooth" }); });
 
-      // Side menu highlight
       function updateSideMenuHighlight() {
         const sections = document.querySelectorAll("section");
         let currentSectionId = "";
@@ -1083,16 +1408,19 @@
         document.querySelectorAll("#sideMenu a").forEach(link => {
           link.classList.toggle("active", link.getAttribute("href") === "#" + currentSectionId);
         });
+        document.querySelectorAll(".dot").forEach(dot => {
+          dot.classList.toggle("active", dot.getAttribute("data-section") === currentSectionId);
+        });
+        document.getElementById("pageNav").style.display = window.scrollY < 50 ? "none" : "flex";
       }
 
-      // Conversion functions
-      function roundsToCards(t){
+      function wavesToCards(t){
         let T = BigInt(t);
         if(T < 1n) return 0n;
         const baseThreshold = BigInt(CONFIG.baseThreshold);
-        let r = T < baseThreshold ? T : baseThreshold;
+        let w = T < baseThreshold ? T : baseThreshold;
         const baseArray = CONFIG.baseArray.map(x => BigInt(x));
-        let base = (r / 5n) * 8n + baseArray[Number(r % 5n)];
+        let base = (w / 5n) * 8n + baseArray[Number(w % 5n)];
         let extra = 0n;
         CONFIG.extraRanges.forEach(range => {
           let a = BigInt(range.a);
@@ -1107,19 +1435,18 @@
         });
         return base + extra;
       }
-      function cardsToRounds(x){
+      function cardsToWaves(x){
         let X = BigInt(x);
         if(X < 1n) return 0n;
         let l = 1n, h = 1n;
-        while(roundsToCards(h) < X){ h *= 2n; }
+        while(wavesToCards(h) < X){ h *= 2n; }
         while(l < h){
           let m = (l + h) / 2n;
-          if(roundsToCards(m) < X) l = m + 1n; else h = m;
+          if(wavesToCards(m) < X) l = m + 1n; else h = m;
         }
         return l;
       }
 
-      // Process animation
       function animateProcessText(text) {
         if(processTextCache === text) return;
         processTextCache = text;
@@ -1164,132 +1491,176 @@
         }, 2);
       }
 
-      // Update result and process
-      function updateResult(){
-        let inputStr = inputValueElem.value.trim();
-        let inputs = inputStr.split(",").map(s => s.trim()).filter(s => /^\d+$/.test(s) && s !== "0");
-        if (inputs.length === 0) {
-          resultDiv.innerText = translations[currentLang].calculator.invalidInput;
-          resultDiv.classList.add("visible");
-          return;
-        }
-        saveLS(LS_KEYS.lastInput, inputStr);
-        let results = [];
-        inputs.forEach(input => {
-          let calcResult = mode === "r2c" ? roundsToCards(input) : cardsToRounds(input);
-          results.push(`${input} → ${calcResult}${translations[currentLang].units[mode]}`);
-          addHistoryRecord(Date.now(), mode, input);
+      function cleanInput(input){
+        let values = input.split(",").map(val => val.trim());
+        let cleanedValues = [];
+        const seen = new Set();
+
+        values.forEach(val => {
+          if (val === "" || val === "0") {
+            animateDelete(val);
+            return;
+          }
+          let cleanedVal = val.replace(/^0+/, "") || "0";
+          if (cleanedVal !== val) animateDelete(val);
+          if (!seen.has(cleanedVal)) {
+            seen.add(cleanedVal);
+            cleanedValues.push(cleanedVal);
+          } else {
+            animateDelete(val);
+          }
         });
-        resultDiv.innerText = results.join("\n");
-        resultDiv.classList.add("visible");
-        updateProcessInfo(inputs[0]);
+
+        return cleanedValues.join(",");
       }
-      function updateProcessInfo(inputStr){
-        if(resultDiv.innerText.trim() === "→") return;
-        if(!/^\d+$/.test(inputStr) || inputStr === "0"){
-          processInfo.innerHTML = "<pre>" + translations[currentLang].calculator.invalidInput + "</pre>";
-          return;
-        }
-        const t = translations[currentLang];
-        let explanation = mode === "r2c" ? t.process.r2cTitle + "\n\n" : t.process.c2rTitle + "\n\n";
-        if(mode === "r2c"){
-          explanation += t.process.r2cIntro + "\n\n";
-          const r = BigInt(inputStr) < BigInt(CONFIG.baseThreshold) ? BigInt(inputStr) : BigInt(CONFIG.baseThreshold);
-          const fullSets = (r / 5n);
-          const baseCalc = fullSets * 8n;
-          const baseArray = CONFIG.baseArray.map(x => BigInt(x));
-          const mod = r % 5n;
-          const lookup = baseArray[Number(mod)];
-          let subtotal = baseCalc + lookup;
-          explanation += t.process.r2cBaseTitle + "\n" + t.process.r2cBaseDesc + "\n" +
-            t.process.r2cBaseCalc
-              .replace("{input}", inputStr)
-              .replace("{r}", r.toString())
-              .replace("{fullSets}", fullSets.toString())
-              .replace("{baseCalc}", baseCalc.toString())
-              .replace("{mod}", mod.toString())
-              .replace("{lookup}", lookup.toString())
-              .replace("{subtotal}", subtotal.toString()) + "\n\n";
-          let extraTotal = 0n;
-          if(BigInt(inputStr) > BigInt(CONFIG.baseThreshold)){
-            explanation += t.process.r2cExtraTitle + "\n" + t.process.r2cExtraDesc + "\n";
-            CONFIG.extraRanges.forEach(range => {
-              let a = BigInt(range.a);
-              let b = (range.b === Infinity) ? BigInt(inputStr) : BigInt(range.b);
-              let f = BigInt(range.f);
-              if(BigInt(inputStr) >= a){
-                let x = BigInt(inputStr) < b ? BigInt(inputStr) : b;
-                let roundsInRange = x - a + 1n;
-                let term1 = roundsInRange;
-                let term2 = ((x + 1n) / 2n) - (a / 2n);
-                let extra = 2n * f * (term1 + 2n * term2);
-                explanation += t.process.r2cExtraCalc
-                  .replace("{a}", a.toString())
-                  .replace("{b}", (b === BigInt(inputStr) ? inputStr : b.toString()))
-                  .replace("{f}", f.toString())
-                  .replace("{roundsInRange}", roundsInRange.toString())
-                  .replace("{extra}", extra.toString()) + "\n";
-                extraTotal += extra;
-              }
+
+      function animateDelete(value) {
+        let span = document.createElement("span");
+        span.textContent = value;
+        span.className = "delete-anim";
+        span.style.position = "absolute";
+        span.style.left = inputValue.getBoundingClientRect().left + "px";
+        span.style.top = inputValue.getBoundingClientRect().top + "px";
+        document.body.appendChild(span);
+        span.addEventListener("animationend", () => {
+          span.remove();
+          if (!document.querySelector(".delete-anim")) {
+            inputValue.value = "";
+          }
+        });
+      }
+
+      function updateResult(){
+        calcBtn.classList.add("loading");
+        setTimeout(() => {
+          const inputStr = cleanInput(inputValue.value.trim());
+          inputValue.value = inputStr;
+          const inputs = inputStr.split(",").map(val => val.trim()).filter(val => val !== "");
+          resultDiv.classList.remove("error");
+          if (inputs.length === 0) {
+            showNotification(t.calculator.invalidInput);
+            calcBtn.classList.remove("loading");
+            return;
+          }
+          let tableHTML = `<table><tbody>`;
+          inputs.forEach(input => {
+            let calcResult = mode === "w2c" ? wavesToCards(input) : cardsToWaves(input);
+            let inputUnit = mode === "w2c" ? t.units.waves : t.units.cards;
+            let outputUnit = mode === "w2c" ? t.units.cards : t.units.waves;
+            let inputText = `${input} ${inputUnit}`;
+            let outputText = mode === "w2c" ? `<span class="card-container" data-cards="${calcResult}">${calcResult} ${outputUnit}<span class="reward-symbol">?</span></span>` : `${calcResult} ${outputUnit}`;
+            let plainOutputText = `${calcResult} ${outputUnit}`;
+            tableHTML += `<tr><td>${inputText}</td><td>→</td><td>${outputText}</td><td><button class="copyBtn" data-text="${inputText} → ${plainOutputText}">⎘</button></td></tr>`;
+            addHistoryRecord(Date.now(), mode, input);
+          });
+          tableHTML += "</tbody></table>";
+          resultDiv.innerHTML = tableHTML;
+          resultDiv.classList.add("visible");
+          updateProcessInfo(inputs);
+          calcBtn.classList.remove("loading");
+          addCopyFunctionality();
+        }, 0);
+      }
+      function addCopyFunctionality(){
+        document.querySelectorAll(".copyBtn").forEach(btn => {
+          btn.addEventListener("click", function(){
+            const text = this.getAttribute("data-text");
+            navigator.clipboard.writeText(text).then(() => {
+              showNotification(t.copied);
             });
-            explanation += "\n" + t.process.r2cTotal
+          });
+        });
+      }
+      function showNotification(message) {
+        notification.textContent = message;
+        notification.classList.add("visible");
+        setTimeout(() => {
+          notification.classList.remove("visible");
+        }, 2000);
+      }
+      function updateProcessInfo(inputs){
+        let explanation = "";
+        inputs.forEach((inputStr, index) => {
+          if(!/^\d+$/.test(inputStr) || inputStr === "0") return;
+          explanation += (index > 0 ? "\n" : "") + (mode === "w2c" ? t.process.w2cTitle : t.process.c2wTitle) + "\n";
+          if(mode === "w2c"){
+            const w = BigInt(inputStr) < BigInt(CONFIG.baseThreshold) ? BigInt(inputStr) : BigInt(CONFIG.baseThreshold);
+            const fullSets = (w / 5n);
+            const baseCalc = fullSets * 8n;
+            const baseArray = CONFIG.baseArray.map(x => BigInt(x));
+            const mod = w % 5n;
+            const lookup = baseArray[Number(mod)];
+            let subtotal = baseCalc + lookup;
+            explanation += t.process.w2cBase
+              .replace("{lookup}", lookup.toString())
+              .replace("{subtotal}", subtotal.toString()) + "\n";
+            let extraTotal = 0n;
+            if(BigInt(inputStr) > BigInt(CONFIG.baseThreshold)){
+              CONFIG.extraRanges.forEach(range => {
+                let a = BigInt(range.a);
+                let b = (range.b === Infinity) ? BigInt(inputStr) : BigInt(range.b);
+                let f = BigInt(range.f);
+                if(BigInt(inputStr) >= a){
+                  let x = BigInt(inputStr) < b ? BigInt(inputStr) : b;
+                  let roundsInRange = x - a + 1n;
+                  let term1 = roundsInRange;
+                  let term2 = ((x + 1n) / 2n) - (a / 2n);
+                  let extra = 2n * f * (term1 + 2n * term2);
+                  explanation += t.process.w2cExtra
+                    .replace("{a}", a.toString())
+                    .replace("{b}", (b === BigInt(inputStr) ? inputStr : b.toString()))
+                    .replace("{f}", f.toString())
+                    .replace("{extra}", extra.toString()) + "\n";
+                  extraTotal += extra;
+                }
+              });
+            }
+            explanation += t.process.w2cTotal
               .replace("{subtotal}", subtotal.toString())
               .replace("{extraTotal}", extraTotal.toString())
-              .replace("{result}", roundsToCards(inputStr).toString()) + "\n";
+              .replace("{result}", wavesToCards(inputStr).toString()) + "\n";
+          } else {
+            let low = 1n, high = 1n;
+            while(wavesToCards(high) < BigInt(inputStr)){ high *= 2n; }
+            let result = cardsToWaves(inputStr);
+            explanation += t.process.c2wDesc
+              .replace("{low}", "1")
+              .replace("{high}", high.toString())
+              .replace("{result}", result.toString()) + "\n";
           }
-        } else {
-          explanation += t.process.c2rIntro + "\n";
-          let low = 1n, high = 1n;
-          while(roundsToCards(high) < BigInt(inputStr)){ high *= 2n; }
-          explanation += t.process.c2rSetup.replace("{high}", high.toString()) + "\n";
-          while(low < high){
-            let mid = (low + high) / 2n;
-            let cards = roundsToCards(mid);
-            explanation += t.process.c2rIteration.replace("{mid}", mid.toString()).replace("{cards}", cards.toString()) + "\n";
-            if(cards < BigInt(inputStr)) low = mid + 1n; else high = mid;
-          }
-          explanation += t.process.c2rResult.replace("{result}", low.toString()) + "\n";
-        }
+        });
         animateProcessText(explanation);
       }
 
-      // Add scroll-to-top button for process
-      function addProcessTopBtn(){
-        if(!document.getElementById("processTopBtn")){
-          const topBtn = document.createElement("button");
-          topBtn.id = "processTopBtn";
-          topBtn.innerHTML = "⥔";
-          topBtn.addEventListener("click", function(){ processInfo.scrollTo({ top: 0, behavior: "smooth" }); });
-          processInfo.appendChild(topBtn);
-        }
-      }
-
-      // Populate tables and chart
       function populateTables(){
-        const r2cValues = [111,200,300,1000,1500,2000,2500,10000,20000];
-        const c2rValues = [40,400,4000,8000,12000,16000,20000,40000,400000];
-        r2cValues.forEach(rounds => {
+        const w2cValues = [111,200,300,1000,1500,2000,2500,10000,20000];
+        const c2wValues = [40,400,4000,8000,12000,16000,20000,40000,400000];
+        w2cTableBody.innerHTML = "";
+        c2wTableBody.innerHTML = "";
+        w2cValues.forEach(waves => {
+          const cards = wavesToCards(waves).toString();
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${rounds}</td><td>${roundsToCards(rounds).toString()}</td>`;
-          r2cTableBody.appendChild(tr);
+          tr.innerHTML = `<td>${waves}</td><td><span class="card-container" data-cards="${cards}">${cards}<span class="reward-symbol">?</span></span></td>`;
+          w2cTableBody.appendChild(tr);
         });
-        c2rValues.forEach(cards => {
+        c2wValues.forEach(cards => {
+          const waves = cardsToWaves(cards).toString();
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${cards}</td><td>${cardsToRounds(cards).toString()}</td>`;
-          c2rTableBody.appendChild(tr);
+          tr.innerHTML = `<td><span class="card-container" data-cards="${cards}">${cards}<span class="reward-symbol">?</span></span></td><td>${waves}</td>`;
+          c2wTableBody.appendChild(tr);
         });
       }
       function generateChart(){
-        const dataPoints = [];
-        const maxRounds = CONFIG.chart.maxRounds;
+        const maxWaves = CONFIG.chart.maxWaves;
         const step = CONFIG.chart.step;
-        for(let r=0; r<=maxRounds; r+=step){
-          dataPoints.push({x: r, y: Number(roundsToCards(r))});
+        const dataPoints = [];
+        for(let w=0; w<=maxWaves; w+=step){
+          dataPoints.push({x: w, y: Number(wavesToCards(w))});
         }
-        const maxY = Number(roundsToCards(maxRounds));
+        const maxY = Number(wavesToCards(maxWaves));
         const ctx = document.getElementById("chart").getContext("2d");
         if(myChart) myChart.destroy();
-        const t = translations[currentLang];
+        const axisColor = body.classList.contains("dark") ? "#fff" : "#333";
         const datasetOptions = {
           label: t.chart.yAxis,
           data: dataPoints,
@@ -1305,7 +1676,7 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: { duration: 1000, easing: 'easeInOutQuad' },
+            animation: { duration: reduceMotion ? 0 : 1000, easing: 'easeInOutQuad' },
             plugins: {
               tooltip: {
                 mode: "index",
@@ -1317,21 +1688,21 @@
             scales: {
               x: {
                 type: "linear",
-                title: { display: true, text: t.chart.xAxis },
+                title: { display: true, text: t.chart.xAxis, font: { size: 14 }, color: axisColor },
                 min: 0,
-                max: maxRounds,
-                ticks: { font: { size: 14 }, color: body.classList.contains("dark") ? "#fff" : "#333" },
+                max: maxWaves,
+                ticks: { font: { size: 12 }, color: axisColor },
                 grid: { display: toggleGridCheckbox.checked }
               },
               y: {
-                title: { display: true, text: t.chart.yAxis },
+                title: { display: true, text: t.chart.yAxis, font: { size: 14 }, color: axisColor },
                 min: 0,
                 max: maxY,
                 ticks: { 
-                  stepSize: 3000, 
-                  callback: value => Math.round(value),
-                  font: { size: 14 }, 
-                  color: body.classList.contains("dark") ? "#fff" : "#333" 
+                  stepSize: maxY / 10, 
+                  callback: value => Math.round(value / 1000) * 1000,
+                  font: { size: 12 }, 
+                  color: axisColor 
                 },
                 grid: { display: toggleGridCheckbox.checked }
               }
@@ -1339,15 +1710,30 @@
           }
         };
         if(toggleAnnotationsCheckbox.checked){
-          chartOptions.options.plugins.annotation = {
-            annotations: {
-              line45: { type: "line", scaleID: "x", value: 45, borderColor: "rgba(255,0,0,0.8)", borderWidth: 2, borderDash: [6,3], label: { enabled: true, position: "start", yAdjust: 10, content: ["45" + t.chart.roundSuffix, roundsToCards(45).toString()], backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", font: { weight: "bold", size: 12 }, borderRadius: 4, padding: 4 } },
-              line111: { type: "line", scaleID: "x", value: 111, borderColor: "rgba(255,0,0,0.8)", borderWidth: 2, borderDash: [6,3], label: { enabled: true, position: "start", yAdjust: 10, content: ["111" + t.chart.roundSuffix, roundsToCards(111).toString()], backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", font: { weight: "bold", size: 12 }, borderRadius: 4, padding: 4 } },
-              line501: { type: "line", scaleID: "x", value: 501, borderColor: "rgba(255,0,0,0.8)", borderWidth: 2, borderDash: [6,3], label: { enabled: true, position: "start", yAdjust: 10, content: ["501" + t.chart.roundSuffix, roundsToCards(501).toString()], backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", font: { weight: "bold", size: 12 }, borderRadius: 4, padding: 4 } },
-              line1001: { type: "line", scaleID: "x", value: 1001, borderColor: "rgba(255,0,0,0.8)", borderWidth: 2, borderDash: [6,3], label: { enabled: true, position: "start", yAdjust: 10, content: ["1001" + t.chart.roundSuffix, roundsToCards(1001).toString()], backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", font: { weight: "bold", size: 12 }, borderRadius: 4, padding: 4 } },
-              line1501: { type: "line", scaleID: "x", value: 1501, borderColor: "rgba(255,0,0,0.8)", borderWidth: 2, borderDash: [6,3], label: { enabled: true, position: "start", yAdjust: 10, content: ["1501" + t.chart.roundSuffix, roundsToCards(1501).toString()], backgroundColor: "rgba(0,0,0,0.7)", color: "#fff", font: { weight: "bold", size: 12 }, borderRadius: 4, padding: 4 } }
-            }
-          };
+          const annotations = {};
+          const keyPoints = [45,111,501,1001,1501].filter(w => w <= maxWaves);
+          keyPoints.forEach((wave, index) => {
+            annotations[`line${wave}`] = {
+              type: "line",
+              scaleID: "x",
+              value: wave,
+              borderColor: "rgba(255,0,0,0.8)",
+              borderWidth: 2,
+              borderDash: [6,3],
+              label: {
+                enabled: true,
+                position: "start",
+                yAdjust: 10,
+                content: [`${wave}${t.chart.waveSuffix}`, wavesToCards(wave).toString()],
+                backgroundColor: "rgba(0,0,0,0.7)",
+                color: "#fff",
+                font: { weight: "bold", size: 10 },
+                borderRadius: 4,
+                padding: 4
+              }
+            };
+          });
+          chartOptions.options.plugins.annotation = { annotations };
         }
         myChart = new Chart(ctx, chartOptions);
       }
@@ -1356,20 +1742,19 @@
       togglePointsCheckbox.addEventListener("change", generateChart);
       toggleGridCheckbox.addEventListener("change", generateChart);
 
-      // Mode switching
-      btnR2C.addEventListener("click", function(){
-        mode = "r2c";
-        btnR2C.classList.add("active");
-        btnC2R.classList.remove("active");
+      btnW2C.addEventListener("click", function(){
+        mode = "w2c";
+        btnW2C.classList.add("active");
+        btnC2W.classList.remove("active");
         saveLS(LS_KEYS.mode, mode);
-        if(resultDiv.innerText.trim() !== "→") updateResult();
+        if(resultDiv.innerText.trim() !== "→" || resultDiv.querySelector("table")) updateResult();
       });
-      btnC2R.addEventListener("click", function(){
-        mode = "c2r";
-        btnC2R.classList.add("active");
-        btnR2C.classList.remove("active");
+      btnC2W.addEventListener("click", function(){
+        mode = "c2w";
+        btnC2W.classList.add("active");
+        btnW2C.classList.remove("active");
         saveLS(LS_KEYS.mode, mode);
-        if(resultDiv.innerText.trim() !== "→") updateResult();
+        if(resultDiv.innerText.trim() !== "→" || resultDiv.querySelector("table")) updateResult();
       });
       calcBtn.addEventListener("click", updateResult);
       processBtn.addEventListener("click", function(e){
@@ -1382,9 +1767,47 @@
       });
       processInfo.addEventListener("wheel", function(e){ e.stopPropagation(); });
 
-      // History functions
+      inputValue.addEventListener("input", function(){
+        clearInput.style.display = this.value ? "block" : "none";
+        const values = this.value.split(",").map(val => val.trim());
+        if (values.length > 5) {
+          this.value = values.slice(0, 5).join(",");
+          showNotification(t.calculator.maxValues);
+        }
+        this.value = this.value.replace(/[^0-9,]/g, "");
+        this.value = this.value.replace(/(^|,)0+/g, "$1").replace(/,0+/g, ",");
+        this.value = this.value.replace(/,+/g, ",");
+      });
+      inputValue.addEventListener("keypress", function(e){
+        if (!/[\d,]/.test(e.key)) {
+          e.preventDefault();
+        }
+        const values = this.value.split(",").map(val => val.trim());
+        if (values.length >= 5 && e.key === ",") {
+          e.preventDefault();
+          showNotification(t.calculator.maxValues);
+        }
+        if (e.key === "," && (this.value.endsWith(",") || this.value === "")) {
+          e.preventDefault();
+        }
+      });
+      inputValue.addEventListener("paste", function(e){
+        e.preventDefault();
+        const text = e.clipboardData.getData("text/plain").replace(/[^0-9,]/g, "");
+        document.execCommand("insertText", false, text);
+      });
+      inputValue.addEventListener("change", function(){
+        this.value = cleanInput(this.value);
+      });
+      clearInput.addEventListener("click", function(){
+        inputValue.value = "";
+        clearInput.style.display = "none";
+        inputValue.focus();
+      });
+
       function addHistoryRecord(timestamp, modeUsed, input){
         historyData.unshift({ timestamp, mode: modeUsed, input });
+        if(historyData.length > 100) historyData.pop();
         saveLS(LS_KEYS.history, historyData);
         currentHistoryPage = 0;
         renderHistory();
@@ -1392,18 +1815,28 @@
       function renderHistory(){
         historyTableBody.innerHTML = "";
         if(historyData.length === 0){
-          historyTableBody.innerHTML = `<tr><td colspan='4'>${translations[currentLang].history.noRecord}</td></tr>`;
+          historyTableBody.innerHTML = `<tr><td colspan='4'>${t.history.noRecord}</td></tr>`;
         } else {
           historyData.slice(currentHistoryPage * recordsPerPage, (currentHistoryPage+1) * recordsPerPage)
             .forEach(rec => {
               const tr = document.createElement("tr");
-              const timeStr = new Date(rec.timestamp).toLocaleString(currentLang === "zh-TW" || currentLang === "zh-CN" ? "zh-TW" : "en-US");
-              let computed = (rec.mode === "r2c") ? roundsToCards(rec.input) : cardsToRounds(rec.input);
-              let resultText = "→ " + computed.toString() + (rec.mode === "r2c" ? translations[currentLang].units.r2c : translations[currentLang].units.c2r);
-              let modeText = (rec.mode === "r2c") ? translations[currentLang].calculator.modeR2C : translations[currentLang].calculator.modeC2R;
-              tr.innerHTML = `<td>${timeStr}</td><td>${modeText}</td><td>${rec.input}</td><td>${resultText}</td>`;
+              const timeStr = new Date(rec.timestamp).toLocaleString(currentLang === "zh-TW" || currentLang === "zh-CN" ? "zh-TW" : currentLang);
+              let computed = (rec.mode === "w2c") ? wavesToCards(rec.input) : cardsToWaves(rec.input);
+              let inputText, resultText;
+              if (rec.mode === "w2c") {
+                inputText = `${rec.input} ${t.units.waves}`;
+                resultText = `<span class="card-container" data-cards="${computed}">${computed} ${t.units.cards}<span class="reward-symbol">?</span></span>`;
+              } else {
+                inputText = `<span class="card-container" data-cards="${rec.input}">${rec.input} ${t.units.cards}<span class="reward-symbol">?</span></span>`;
+                resultText = `${computed} ${t.units.waves}`;
+              }
+              let modeText = (rec.mode === "w2c") ? t.calculator.modeW2C : t.calculator.modeC2W;
+              tr.innerHTML = `<td data-label="${t.tables.history.header1}">${timeStr}</td><td data-label="${t.tables.history.header2}">${modeText}</td><td data-label="${t.tables.history.header3}">${inputText}</td><td data-label="${t.tables.history.header4}">${resultText}</td>`;
               historyTableBody.appendChild(tr);
             });
+          setTimeout(() => {
+            historyTableBody.querySelectorAll("tr").forEach(tr => tr.classList.add("visible"));
+          }, 50);
         }
         renderHistoryPagination();
       }
@@ -1414,120 +1847,172 @@
         const paginationDiv = document.createElement("div");
         if(currentHistoryPage > 0){
           const prevBtn = document.createElement("button");
-          prevBtn.textContent = translations[currentLang].pagination.prev;
-          prevBtn.style.marginRight = "1rem";
+          prevBtn.textContent = t.pagination.prev;
           prevBtn.addEventListener("click", function(){ currentHistoryPage--; renderHistory(); });
           paginationDiv.appendChild(prevBtn);
         }
         const pageInfo = document.createElement("span");
-        pageInfo.textContent = translations[currentLang].pagination.pageInfo
+        pageInfo.textContent = t.pagination.pageInfo
           .replace("{current}", currentHistoryPage + 1)
           .replace("{total}", totalPages);
         paginationDiv.appendChild(pageInfo);
         if(currentHistoryPage < totalPages - 1){
           const nextBtn = document.createElement("button");
-          nextBtn.textContent = translations[currentLang].pagination.next;
-          nextBtn.style.marginLeft = "1rem";
+          nextBtn.textContent = t.pagination.next;
           nextBtn.addEventListener("click", function(){ currentHistoryPage++; renderHistory(); });
           paginationDiv.appendChild(nextBtn);
         }
         historyPagination.appendChild(paginationDiv);
       }
-      clearHistoryBtn.addEventListener("click", function(){
-        if(confirm("Are you sure you want to clear all history records?")){
-          historyData = [];
-          saveLS(LS_KEYS.history, historyData);
-          currentHistoryPage = 0;
-          renderHistory();
-        }
-      });
 
-      // Language update
       function updateLanguage() {
-        currentLang = langSelect.value;
-        const t = translations[currentLang] || translations["zh-TW"];
+        t = translations[currentLang] || translations["zh-TW"];
         document.querySelector("#calculator .module h2").textContent = t.calculator.title;
         document.querySelector("#common .module h2").textContent = t.common.title;
         document.querySelector("#chartSection .module h2").textContent = t.chart.title;
         document.querySelector("#history .module h2").textContent = t.history.title;
-        document.getElementById("btnR2C").textContent = t.calculator.modeR2C;
-        document.getElementById("btnC2R").textContent = t.calculator.modeC2R;
+        document.querySelector("#w2cTable thead tr th:nth-child(1)").textContent = t.tables.w2c.header1;
+        document.querySelector("#w2cTable thead tr th:nth-child(2)").textContent = t.tables.w2c.header2;
+        document.querySelector("#c2wTable thead tr th:nth-child(1)").textContent = t.tables.c2w.header1;
+        document.querySelector("#c2wTable thead tr th:nth-child(2)").textContent = t.tables.c2w.header2;
+        document.querySelector("#historyTable thead tr th:nth-child(1)").textContent = t.tables.history.header1;
+        document.querySelector("#historyTable thead tr th:nth-child(2)").textContent = t.tables.history.header2;
+        document.querySelector("#historyTable thead tr th:nth-child(3)").textContent = t.tables.history.header3;
+        document.querySelector("#historyTable thead tr th:nth-child(4)").textContent = t.tables.history.header4;
+        document.querySelector("#common .table-box:nth-child(1) h3").textContent = t.common.w2c;
+        document.querySelector("#common .table-box:nth-child(2) h3").textContent = t.common.c2w;
+        document.getElementById("btnW2C").textContent = t.calculator.modeW2C;
+        document.getElementById("btnC2W").textContent = t.calculator.modeC2W;
         document.querySelector("#calculator label[for='inputValue']").textContent = t.calculator.inputLabel;
         document.getElementById("calcBtn").textContent = t.calculator.calcBtn;
-        document.getElementById("processBtn").textContent = t.calculator.processBtn;
+        document.getElementById("processBtn").textContent = "?";
         document.querySelector("#chartSection label[for='chartType']").textContent = t.chart.chartTypeLabel;
         chartTypeSelect.options[0].text = t.chart.optionLine;
         chartTypeSelect.options[1].text = t.chart.optionBar;
         document.getElementById("annotationsLabel").textContent = t.chart.showAnnotationsLabel;
         document.getElementById("pointsLabel").textContent = t.chart.showPointsLabel;
         document.getElementById("gridLabel").textContent = t.chart.showGridLabel;
-        document.getElementById("clearHistory").textContent = t.history.clearHistory;
-        let r2cHeaders = document.querySelectorAll("#r2cTable thead tr th");
-        r2cHeaders[0].textContent = t.tables.r2c.header1;
-        r2cHeaders[1].textContent = t.tables.r2c.header2;
-        let c2rHeaders = document.querySelectorAll("#c2rTable thead tr th");
-        c2rHeaders[0].textContent = t.tables.c2r.header1;
-        c2rHeaders[1].textContent = t.tables.c2r.header2;
-        let historyHeaders = document.querySelectorAll("#historyTable thead tr th");
-        historyHeaders[0].textContent = t.tables.history.header1;
-        historyHeaders[1].textContent = t.tables.history.header2;
-        historyHeaders[2].textContent = t.tables.history.header3;
-        historyHeaders[3].textContent = t.tables.history.header4;
         document.getElementById("menuCalculator").textContent = t.nav.calculator;
         document.getElementById("menuCommon").textContent = t.nav.common;
         document.getElementById("menuChartSection").textContent = t.nav.chartSection;
         document.getElementById("menuHistory").textContent = t.nav.history;
         siteTitleSub.textContent = t.siteTitleSub;
-        document.getElementById("hiddenCredits").textContent = t.credits;
-        renderToggleBtn();
+        footer.textContent = t.footer;
+        inputValue.placeholder = t.calculator.placeholder;
+        clearInput.textContent = t.clear;
+        document.querySelector("#settingsPopup label[for='langSelect']").textContent = "🌐 [L] " + t.settings.language;
+        document.querySelector("#settingsPopup label[for='themeSelect']").textContent = "🎨 [T] " + t.settings.theme;
+        document.querySelector("#settingsPopup label[for='reduceMotion']").textContent = t.settings.reduceMotion;
+        document.getElementById("clearHistory").textContent = t.settings.clearHistory;
+        themeSelect.options[0].text = t.darkMode.system;
+        themeSelect.options[1].text = t.darkMode.light;
+        themeSelect.options[2].text = t.darkMode.dark;
+        langSelect.options[0].text = t.autoSelectLanguage;
+        sideMenuToggle.setAttribute("title", t.nav.toggleMenu);
+        sideMenuToggle.setAttribute("aria-label", t.nav.toggleMenu);
+        settingsToggle.setAttribute("title", t.settings.title);
+        settingsToggle.setAttribute("aria-label", t.settings.title);
+        document.getElementById("rewardModal").querySelector("h3").textContent = t.reward.title;
+        document.getElementById("rewardModal").querySelector("label").textContent = t.reward.selectRank;
         renderHistory();
         generateChart();
-        // Update dynamic content
-        if (inputValueElem.value.trim() !== "") {
+        if (inputValue.value.trim()) {
           updateResult();
         } else {
           resultDiv.innerText = "→ ";
           resultDiv.classList.remove("visible");
         }
+        updateRankOptions();
       }
-      langSelect.addEventListener("change", updateLanguage);
 
-      // Initial setup
+      function showModal(cards){
+        currentCards = cards;
+        updateRankOptions();
+        document.getElementById("rankSelect").value = lastRank;
+        updateRewardDetails(cards, lastRank);
+        modalOverlay.style.display = "block";
+        rewardModal.style.display = "block";
+        setTimeout(() => {
+          rewardModal.classList.add("visible");
+        }, 10);
+      }
+      function hideModal(){
+        rewardModal.classList.remove("visible");
+        setTimeout(() => {
+          modalOverlay.style.display = "none";
+          rewardModal.style.display = "none";
+        }, 300);
+      }
+      function updateRewardDetails(cards, rank){
+        const boxes = Math.floor(cards / 40);
+        const reward = REWARDS[rank] || REWARDS[20];
+        const rewardText = `
+          <dl>
+            <dt>${t.reward.boxes}</dt><dd>${boxes}</dd>
+          </dl>
+          <hr>
+          <dl>
+            <dt>${t.reward.commonDice}</dt><dd>${reward.common * boxes}</dd>
+            <dt>${t.reward.rareDice}</dt><dd>${reward.rare * boxes}</dd>
+            <dt>${t.reward.heroDice}</dt><dd>${reward.hero * boxes}</dd>
+            <dt>${t.reward.legendaryDice}</dt><dd>${(reward.legendary * boxes).toFixed(2)} ${t.reward.expected}</dd>
+          </dl>
+          <hr>
+          <dl>
+            <dt>${t.reward.gold}</dt><dd>${reward.gold * boxes}</dd>
+            <dt>${t.reward.diamonds}</dt><dd>${reward.diamonds * boxes}</dd>
+          </dl>
+        `;
+        document.getElementById("rewardDetails").innerHTML = rewardText;
+      }
+      document.getElementById("rankSelect").addEventListener("change", function(){
+        lastRank = this.value;
+        saveLS(LS_KEYS.lastRank, lastRank);
+        updateRewardDetails(currentCards, this.value);
+      });
+      modalOverlay.addEventListener("click", hideModal);
+
+      function updateRankOptions(){
+        const rankSelect = document.getElementById("rankSelect");
+        rankSelect.innerHTML = "";
+        for(let i=1; i<=19; i++){
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = currentLang === "en" ? `Rank ${i}` : i;
+          rankSelect.appendChild(option);
+        }
+        const option20 = document.createElement("option");
+        option20.value = "20";
+        option20.textContent = currentLang === "en" ? "Rank 20⁺" : "20⁺";
+        rankSelect.appendChild(option20);
+        rankSelect.value = lastRank;
+      }
+
       populateTables();
       generateChart();
       initPreferences();
 
-      // Update chart axis color
       function updateChartAxisColor(){
         if(myChart){
-          myChart.options.scales.x.ticks.color = body.classList.contains("dark") ? "#fff" : "#333";
-          myChart.options.scales.y.ticks.color = body.classList.contains("dark") ? "#fff" : "#333";
+          const axisColor = body.classList.contains("dark") ? "#fff" : "#333";
+          myChart.options.scales.x.ticks.color = axisColor;
+          myChart.options.scales.y.ticks.color = axisColor;
+          myChart.options.scales.x.title.color = axisColor;
+          myChart.options.scales.y.title.color = axisColor;
           myChart.update();
         }
       }
 
-      // Easter egg
       function triggerEasterEgg() {
+        if(reduceMotion) return;
         eggClickCount++;
         if(eggTimeout) clearTimeout(eggTimeout);
-        eggTimeout = setTimeout(() => { eggClickCount = 0; easterEggText.textContent = ""; }, 5000);
-        const floatEmoji = document.createElement("span");
-        floatEmoji.textContent = "🤔";
-        floatEmoji.style.position = "fixed";
-        floatEmoji.style.zIndex = "9999";
-        floatEmoji.style.left = (Math.random() * 80 + 10) + "%";
-        floatEmoji.style.bottom = "0px";
-        floatEmoji.style.fontSize = "2.5rem";
-        floatEmoji.style.opacity = "1";
-        floatEmoji.style.pointerEvents = "none";
-        floatEmoji.style.transition = "transform 3s ease-out, opacity 3s ease-out";
-        document.body.appendChild(floatEmoji);
-        setTimeout(() => {
-          floatEmoji.style.transform = "translateY(-120vh) rotate(" + (Math.random()*20-10) + "deg) scale(2)";
-          floatEmoji.style.opacity = "0";
-        }, 50);
-        setTimeout(() => { floatEmoji.remove(); }, 3050);
-        const tEgg = translations[currentLang].easterEgg;
+        eggTimeout = setTimeout(() => {
+          eggClickCount = 0;
+          easterEggText.textContent = "";
+          easterEggText.style.color = "";
+        }, 5000);
+        const tEgg = t.easterEgg;
         switch(eggClickCount){
           case 1: easterEggText.textContent = tEgg.click1; break;
           case 3: easterEggText.textContent = tEgg.click3; break;
@@ -1539,39 +2024,56 @@
           case 35: easterEggText.textContent = tEgg.click35; break;
           case 45: easterEggText.textContent = tEgg.click45; break;
           case 60: easterEggText.textContent = tEgg.click60; break;
-          default: if(eggClickCount >= 80) easterEggText.textContent = tEgg.click80; break;
+          case 80: easterEggText.textContent = tEgg.click80; break;
+          default: if(eggClickCount > 80) {
+            easterEggText.textContent = tEgg.click80;
+            easterEggText.style.color = `hsl(${Math.random()*360}, 100%, 50%)`;
+          }
+          break;
         }
-      }
-      siteTitleContainer.addEventListener("click", triggerEasterEgg);
-
-      // Load animation
-      window.addEventListener("load", function(){
-        sideMenu.classList.remove("collapsed");
-        setTimeout(() => {
-          sideMenu.classList.add("collapsed");
-          sideMenuToggle.style.left = "0px";
-        }, 2000);
-        for(let i = 0; i < 20; i++){
+        if(eggClickCount < 80) easterEggText.style.color = "var(--primary-color)";
+        for(let i = 0; i < Math.min(eggClickCount, 5); i++){
           setTimeout(() => {
             let emoji = document.createElement("span");
             emoji.textContent = "🤔";
-            emoji.style.position = "fixed";
-            emoji.style.bottom = "0px";
+            emoji.className = "easter-egg";
             emoji.style.left = (Math.random() * 80 + 10) + "%";
-            emoji.style.fontSize = "2rem";
-            emoji.style.opacity = "1";
-            emoji.style.pointerEvents = "none";
-            emoji.style.zIndex = "9999";
-            emoji.style.transition = "transform 2s ease-out, opacity 2s ease-out";
+            emoji.style.bottom = "0px";
             document.body.appendChild(emoji);
             requestAnimationFrame(() => {
-              emoji.style.transform = "translateY(-100vh) scale(1.5)";
-              emoji.style.opacity = "0";
+              emoji.classList.add("visible");
             });
-            setTimeout(() => { emoji.remove(); }, 2100);
+            setTimeout(() => {
+              emoji.remove();
+            }, 2000);
           }, i * 100);
         }
+      }
+      siteTitleContainer.addEventListener("click", triggerEasterEgg);
+      siteTitleContainer.addEventListener("touchstart", triggerEasterEgg);
+
+      window.addEventListener("load", function(){
+        if(!reduceMotion){
+          for(let i = 0; i < 5; i++){
+            setTimeout(() => {
+              let emoji = document.createElement("span");
+              emoji.textContent = "🤔";
+              emoji.className = "easter-egg";
+              emoji.style.left = (Math.random() * 80 + 10) + "%";
+              emoji.style.bottom = "0px";
+              document.body.appendChild(emoji);
+              requestAnimationFrame(() => {
+                emoji.classList.add("visible");
+              });
+              setTimeout(() => {
+                emoji.remove();
+              }, 2000);
+            }, i * 100);
+          }
+        }
       });
+
+      updateSideMenuHighlight();
     })();
   </script>
 </body>
