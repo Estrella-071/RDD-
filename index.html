@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Card / Wave Converter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,6 +115,7 @@
     .mode-toggles {
       display: flex;
       gap: 0.75rem;
+      flex-wrap: nowrap;
     }
     .mode-toggle {
       padding: 0.5rem 1rem;
@@ -128,6 +129,7 @@
       transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
       color: var(--primary-color);
       user-select: none;
+      min-width: 100px;
     }
     .mode-toggle.active {
       background: var(--primary-active);
@@ -349,6 +351,19 @@
       .copyBtn {
         position: relative;
         margin-top: 0.5rem;
+      }
+      .mode-toggles {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .mode-toggle {
+        min-width: 120px;
+        margin: 0.25rem;
+        padding: 0.5rem;
+      }
+      #processBtn {
+        padding: 0.5rem;
+        min-width: 40px;
       }
     }
     #processBtn {
@@ -619,6 +634,7 @@
       z-index: 2000;
       opacity: 0;
       transition: opacity 0.3s ease;
+      width: 300px;
     }
     body.dark #rewardModal {
       background: rgba(34,34,34,0.8);
@@ -668,13 +684,14 @@
       padding: 1rem;
       box-shadow: 0 4px 8px var(--shadow-light);
       z-index: 1600;
-      width: 200px;
+      width: 250px;
       color: var(--text-color);
       visibility: hidden;
       opacity: 0;
       transform: translateY(-10px);
       transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
       pointer-events: none;
+      background-image: linear-gradient(135deg, rgba(52,152,219,0.1), rgba(41,128,185,0.1));
     }
     #settingsPopup.visible {
       visibility: visible;
@@ -693,6 +710,7 @@
       margin-right: 1rem;
       font-size: 0.9rem;
       color: var(--text-color);
+      white-space: nowrap;
     }
     #settingsPopup select, #settingsPopup button {
       width: 100%;
@@ -719,8 +737,9 @@
         width: 95%;
       }
       .mode-container {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
       }
       .mode-toggles {
         display: flex;
@@ -729,8 +748,13 @@
       }
       .mode-toggle {
         flex: 1 1 auto;
-        min-width: 120px;
+        min-width: 100px;
         margin: 0.25rem;
+        padding: 0.5rem 1rem;
+      }
+      #processBtn {
+        padding: 0.5rem;
+        min-width: 40px;
       }
       #calculator > div[style] {
         flex-direction: column;
@@ -774,6 +798,9 @@
         left: 10px;
         right: auto;
         bottom: auto;
+      }
+      #dotNav {
+        display: none;
       }
     }
     @media (max-width: 768px) {
@@ -837,6 +864,11 @@
       gap: 1rem;
       z-index: 1200;
     }
+    @media (min-width: 769px) {
+      .dot-nav {
+        display: flex;
+      }
+    }
     .dot {
       width: 12px;
       height: 12px;
@@ -852,11 +884,6 @@
       transform: scale(1.5);
       background: transparent;
       border: 2px solid var(--primary-color);
-    }
-    @media (min-width: 769px) {
-      .dot-nav {
-        display: flex;
-      }
     }
     #reduceMotion {
       appearance: none;
@@ -2032,7 +2059,7 @@
           break;
         }
         if(eggClickCount < 80) easterEggText.style.color = "var(--primary-color)";
-        for(let i = 0; i < Math.min(eggClickCount, 5); i++){
+        for(let i = 0; i < Math.min(eggClickCount, 3); i++){ // Reduced to 3 for performance
           setTimeout(() => {
             let emoji = document.createElement("span");
             emoji.textContent = "🤔";
@@ -2045,7 +2072,7 @@
             });
             setTimeout(() => {
               emoji.remove();
-            }, 2000);
+            }, 1000); // Reduced animation duration
           }, i * 100);
         }
       }
@@ -2054,7 +2081,7 @@
 
       window.addEventListener("load", function(){
         if(!reduceMotion){
-          for(let i = 0; i < 5; i++){
+          for(let i = 0; i < 3; i++){ // Reduced to 3 for performance
             setTimeout(() => {
               let emoji = document.createElement("span");
               emoji.textContent = "🤔";
@@ -2067,7 +2094,7 @@
               });
               setTimeout(() => {
                 emoji.remove();
-              }, 2000);
+              }, 1000); // Reduced animation duration
             }, i * 100);
           }
         }
