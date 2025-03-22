@@ -6,7 +6,7 @@
   <title>Card / Wave Converter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
   <style>
@@ -30,7 +30,8 @@
       --shadow-light: rgba(0,0,0,0.1);
       --shadow-dark: rgba(0,0,0,0.2);
       --button-shadow: 0 3px 6px rgba(0,0,0,0.15);
-      --bg-gradient-light: linear-gradient(-45deg, #f0f4f8, #d9e2ec, #f0f4f8, #d9e2ec);
+      --bg-gradient-light: linear-gradient(-45deg, #f0f4f8, #d9e2ec, #c8d7e1, #b0c7d6);
+      --bg-pattern-light: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="1" fill="#ccc"/></svg>');
     }
     .dark {
       --bg-color: #1a1a1a;
@@ -42,20 +43,19 @@
       --shadow-light: rgba(0,0,0,0.3);
       --shadow-dark: rgba(0,0,0,0.5);
       --button-shadow: 0 5px 10px rgba(0,0,0,0.3);
-      --bg-gradient-dark: linear-gradient(-45deg, #1a1a1a, #242424, #1a1a1a, #242424);
+      --bg-gradient-dark: linear-gradient(-45deg, #1a1a1a, #242424, #2e2e2e, #383838);
+      --bg-pattern-dark: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="1" fill="#444"/></svg>');
     }
     body {
-      background: var(--bg-gradient-light);
-      background-size: 200% 200%;
+      background: var(--bg-gradient-light), var(--bg-pattern-light);
+      background-size: 200% 200%, 20px 20px;
       animation: bgShift 15s ease infinite;
       color: var(--text-color);
       font-size: 16px;
       transition: background 1s ease, color 1s ease;
     }
     body.dark {
-      background: var(--bg-gradient-dark);
-      background-size: 200% 200%;
-      animation: bgShift 15s ease infinite;
+      background: var(--bg-gradient-dark), var(--bg-pattern-dark);
     }
     @keyframes bgShift {
       0% { background-position: 0% 50%; }
@@ -83,7 +83,8 @@
     .module {
       background: var(--container-bg);
       border-radius: 1rem;
-      box-shadow: 0.5rem 0.5rem 1rem var(--shadow-light), -0.5rem -0.5rem 1rem var(--shadow-light);
+      box-shadow: 0 10px 20px var(--shadow-light), 0 -10px 20px var(--shadow-light);
+      border: 1px solid var(--primary-color);
       padding: 2.5rem;
       margin: 1rem auto;
       width: 90%;
@@ -91,12 +92,12 @@
       transition: box-shadow 0.3s;
     }
     .module:hover {
-      box-shadow: 0.75rem 0.75rem 1.5rem var(--shadow-dark), -0.75rem -0.75rem 1.5rem var(--shadow-dark);
+      box-shadow: 0 15px 30px var(--shadow-dark), 0 -15px 30px var(--shadow-dark);
     }
     .module h2 {
       text-align: center;
       margin-bottom: 2rem;
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Playfair Display', serif;
       font-size: 2rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -126,16 +127,20 @@
       font-size: 1rem;
       font-weight: 600;
       background: transparent;
-      transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
       color: var(--primary-color);
       user-select: none;
-      min-width: 100px;
+      min-width: 44px;
+      min-height: 44px;
     }
     .mode-toggle.active {
       background: var(--primary-active);
       color: #fff;
     }
-    .mode-toggle:hover { transform: scale(1.05); }
+    .mode-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px var(--primary-color);
+    }
     .mode-toggle:active { transform: scale(0.95); }
     .table-container {
       display: flex;
@@ -207,16 +212,18 @@
       backdrop-filter: blur(10px);
       box-shadow: 2px 0 8px rgba(0,0,0,0.1);
       border-radius: 0 1rem 1rem 0;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease;
       z-index: 1300;
       padding: 1.5rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
       transform: translateX(0);
+      opacity: 1;
     }
     #sideMenu.collapsed {
       transform: translateX(-100%);
+      opacity: 0;
     }
     body.dark #sideMenu { background: rgba(34,34,34,0.8); }
     #sideMenu a {
@@ -227,6 +234,7 @@
       border-radius: 0.5rem;
       transition: transform 0.3s ease, background 0.3s ease;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     body.dark #sideMenu a { color: #ddd; }
     #sideMenu a.active, #sideMenu a:hover {
@@ -286,6 +294,7 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     #settingsToggle {
       position: fixed;
@@ -306,6 +315,7 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     #settingsToggle.rotate {
       transform: rotate(180deg);
@@ -325,6 +335,7 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     #navTop:hover {
       transform: scale(1.1);
@@ -363,7 +374,7 @@
       }
       #processBtn {
         padding: 0.5rem;
-        min-width: 40px;
+        min-width: 44px;
       }
     }
     #processBtn {
@@ -375,23 +386,26 @@
       font-size: 1.2rem;
       border-radius: 0.5rem;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
       user-select: none;
       margin-left: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      -webkit-tap-highlight-color: transparent;
     }
     #processBtn:hover {
       background: var(--primary-active);
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     #processBtn:active { transform: scale(0.98); }
     #processInfo {
       max-height: 0;
       overflow-y: auto;
       opacity: 0;
-      transition: max-height 0.3s ease, opacity 0.3s ease;
+      transform: translateY(-10px);
+      transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
       margin-top: 0.5rem;
       padding: 0 0.5rem;
       background: #fff;
@@ -409,6 +423,7 @@
     #processInfo.visible {
       max-height: 15rem;
       opacity: 1;
+      transform: translateY(0);
       padding: 0.5rem;
     }
     .result {
@@ -421,7 +436,7 @@
       font-weight: 600;
       color: var(--primary-color);
       opacity: 0;
-      transform: translateX(20px);
+      transform: translateY(20px);
       transition: opacity 0.3s ease, transform 0.3s ease;
       max-height: 10rem;
       overflow-y: auto;
@@ -429,7 +444,7 @@
     }
     .result.visible {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
     .copyBtn {
       background: var(--primary-color);
@@ -439,11 +454,15 @@
       border-radius: 0.5rem;
       cursor: pointer;
       font-size: 0.9rem;
-      transition: background 0.2s ease, transform 0.2s ease;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      min-width: 44px;
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
     }
     .copyBtn:hover {
       background: var(--primary-active);
       transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .chart-container {
       position: relative;
@@ -465,6 +484,15 @@
       flex-wrap: wrap;
     }
     #chartControls label { font-size: 0.9rem; color: var(--text-color); cursor: pointer; }
+    .chart-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      background: var(--container-bg);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 5px var(--shadow-light);
+    }
     #footer {
       position: fixed;
       bottom: -50px;
@@ -500,17 +528,24 @@
       border-radius: 0.5rem;
       cursor: pointer;
       margin: 0.5rem 0;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
       user-select: none;
+      min-width: 44px;
+      min-height: 44px;
+      -webkit-tap-highlight-color: transparent;
     }
     button:hover {
       background: var(--primary-active);
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     button:active { transform: scale(0.98); }
     button.loading {
       opacity: 0.7;
       cursor: not-allowed;
+    }
+    #calcBtn:hover {
+      box-shadow: 0 0 10px var(--primary-color);
     }
     input[type="text"], select {
       padding: 0.5rem;
@@ -553,17 +588,32 @@
       overflow-x: auto;
     }
     #historyPagination button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
       background: var(--primary-color);
       color: #fff;
       border: none;
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       cursor: pointer;
       transition: background 0.3s;
     }
     #historyPagination button:hover {
       background: var(--primary-active);
+    }
+    #historyPagination button .icon {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      #historyPagination button .text {
+        display: none;
+      }
+      #historyPagination button .icon {
+        display: inline;
+      }
+      #historyPagination button {
+        padding: 0.5rem;
+        min-width: 44px;
+        font-size: 1.2rem;
+      }
     }
     #clearInput {
       display: none;
@@ -584,11 +634,13 @@
       font-size: 1rem;
       border-radius: 0.5rem;
       cursor: pointer;
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.3s;
     }
     .subtle-btn:hover {
       background: var(--primary-color);
       color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     @keyframes deleteAnimation {
       0% { opacity: 1; transform: scale(1); color: inherit; }
@@ -603,6 +655,8 @@
     .card-container {
       position: relative;
       cursor: pointer;
+      padding: 0.2rem;
+      display: inline-block;
     }
     .reward-symbol {
       font-size: 0.8em;
@@ -742,7 +796,6 @@
         justify-content: center;
       }
       .mode-toggles {
-        display: flex;
         flex-wrap: wrap;
         justify-content: center;
       }
@@ -753,8 +806,8 @@
         padding: 0.5rem 1rem;
       }
       #processBtn {
-        padding: 0.5rem;
-        min-width: 40px;
+        margin-left: 0;
+        margin-top: 0.5rem;
       }
       #calculator > div[style] {
         flex-direction: column;
@@ -762,10 +815,6 @@
       }
       #inputValue {
         width: 100%;
-      }
-      #processBtn {
-        margin-left: 0;
-        margin-top: 0.5rem;
       }
       .copyBtn {
         width: 100%;
@@ -865,9 +914,7 @@
       z-index: 1200;
     }
     @media (min-width: 769px) {
-      .dot-nav {
-        display: flex;
-      }
+      .dot-nav { display: flex; }
     }
     .dot {
       width: 12px;
@@ -911,6 +958,15 @@
     }
     #reduceMotion:checked::after {
       transform: translateX(20px);
+    }
+    .loader {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -1020,7 +1076,7 @@
           <option value="bar"></option>
         </select>
       </div>
-      <div id="chartControls">
+      <div id="chartControls" class="chart-controls">
         <label><input type="checkbox" id="toggleAnnotations" checked><span id="annotationsLabel"></span></label>
         <label><input type="checkbox" id="togglePoints" checked><span id="pointsLabel"></span></label>
         <label><input type="checkbox" id="toggleGrid" checked><span id="gridLabel"></span></label>
@@ -1185,15 +1241,15 @@
           process: { w2cTitle: "【ウェーブ → カード】", w2cBase: "最初の45ウェーブ：5ウェーブごとに8カード、ボーナス {lookup} カード、合計 {subtotal} カード。", w2cExtra: "45ウェーブ超え：範囲 {a}-{b}（倍率 {f}）：{extra} カード。", w2cTotal: "総カード数：{subtotal} + {extraTotal} = {result}", c2wTitle: "【カード → ウェーブ】", c2wDesc: "二分探索で最小ウェーブ数を検索：範囲 {low}-{high}、最終 {result} ウェーブ。" },
           tables: { w2c: { header1: "ウェーブ数", header2: "カード数" }, c2w: { header1: "カード数", header2: "ウェーブ数" }, history: { header1: "時間", header2: "モード", header3: "入力値", header4: "結果" } },
           units: { waves: "ウェーブ", cards: "カード" },
-          pagination: { prev: "前へ", next: "次へ", pageInfo: "{total}ページ中 {current}ページ" },
+          pagination: { prev: "前", next: "次", pageInfo: "ページ {current}/{total}" },
           footer: "© 2025 𝕫𝕙𝕚𝕝𝕚 (Discord@zhili_71)",
           darkMode: { light: "ライトモード", dark: "ダークモード", system: "システムデフォルト" },
           language: "言語",
           siteTitleSub: "協力モードカード計算機",
           backToTop: "トップに戻る",
-          easterEgg: { click1: "Thinking🤔", click3: "ダブル Thinking🤔", click5: "トリプル Thinking🤔！", click7: "全てを支配！", click10: "狂乱攻撃！！", click15: "究極 Thinking🤔！！", click25: "止められない！！", click35: "異常殺戮！！", click45: "獣級 Thinking🤔！！！", click60: "超神の！！！！", click80: "神を超える！！！！" },
+          easterEgg: { click1: "Thinking🤔", click3: "ダブル Thinking🤔", click5: "トリプル Thinking🤔！", click7: "全てを支配！", click10: "狂乱攻撃！！", click15: "究極 Thinking🤔！！", click25: "止められない！！", click35: "異常殺戮！！", click45: "猛獣級 Thinking🤔！！！", click60: "超神の！！！！", click80: "神を超える！！！！" },
           copied: "コピーしました",
-          settings: { title: "設定", language: "言語", theme: "テーマ", reduceMotion: "モーションを減らす", clearHistory: "履歴をクリア" },
+          settings: { title: "設定", language: "言語", theme: "テーマ", reduceMotion: "アニメーションを減らす", clearHistory: "履歴をクリア" },
           autoSelectLanguage: "言語を自動選択",
           reward: { title: "報酬計算", selectRank: "ランクを選択", boxes: "ボックス", commonDice: "一般ダイス", rareDice: "レアダイス", heroDice: "ヒーローダイス", legendaryDice: "レジェンダリーダイス", gold: "ゴールド", diamonds: "ダイヤモンド", expected: "（期待値）" }
         },
@@ -1559,6 +1615,8 @@
 
       function updateResult(){
         calcBtn.classList.add("loading");
+        resultDiv.innerHTML = '<div class="loader">⚀</div>';
+        resultDiv.classList.add("visible");
         setTimeout(() => {
           const inputStr = cleanInput(inputValue.value.trim());
           inputValue.value = inputStr;
@@ -1582,11 +1640,10 @@
           });
           tableHTML += "</tbody></table>";
           resultDiv.innerHTML = tableHTML;
-          resultDiv.classList.add("visible");
           updateProcessInfo(inputs);
           calcBtn.classList.remove("loading");
           addCopyFunctionality();
-        }, 0);
+        }, 500);
       }
       function addCopyFunctionality(){
         document.querySelectorAll(".copyBtn").forEach(btn => {
@@ -1691,8 +1748,8 @@
         const datasetOptions = {
           label: t.chart.yAxis,
           data: dataPoints,
-          borderColor: "rgba(75,192,192,1)",
-          backgroundColor: "rgba(75,192,192,0.2)",
+          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
           pointRadius: togglePointsCheckbox.checked ? 4 : 0,
           fill: false,
           tension: 0.15
@@ -1874,7 +1931,7 @@
         const paginationDiv = document.createElement("div");
         if(currentHistoryPage > 0){
           const prevBtn = document.createElement("button");
-          prevBtn.textContent = t.pagination.prev;
+          prevBtn.innerHTML = `<span class="text">${t.pagination.prev}</span><span class="icon">◀</span>`;
           prevBtn.addEventListener("click", function(){ currentHistoryPage--; renderHistory(); });
           paginationDiv.appendChild(prevBtn);
         }
@@ -1885,7 +1942,7 @@
         paginationDiv.appendChild(pageInfo);
         if(currentHistoryPage < totalPages - 1){
           const nextBtn = document.createElement("button");
-          nextBtn.textContent = t.pagination.next;
+          nextBtn.innerHTML = `<span class="text">${t.pagination.next}</span><span class="icon">▶</span>`;
           nextBtn.addEventListener("click", function(){ currentHistoryPage++; renderHistory(); });
           paginationDiv.appendChild(nextBtn);
         }
